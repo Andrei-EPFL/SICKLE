@@ -1,0 +1,33 @@
+ Configuration file: linhalo.conf
+  PK_INPUT = /home/epfl/variu/phd/voids/chengscodes/linhalo_fix_ampl_CIC/input/EisensteinHu_Pnw.txt
+  NGRID = 2048
+  BOXSIZE = 2500
+  SEED = 1001000
+  NHALO = 10
+  OUTPUT = /home/epfl/variu/phd/voids/chengscodes/linhalo_fix_ampl_CIC/output/halos_G2048CIC_BS2500_S1001000_6214031.dat
+  SAVE_DENS = 0
+  FORCE = 0
+                                                                      [DONE]
+Processing the linear power spectrum ... 
+  Filename: /home/epfl/variu/phd/voids/chengscodes/linhalo_fix_ampl_CIC/input/EisensteinHu_Pnw.txt
+  Number of records: 7860.
+  7860 valid lines recorded.
+  Power spectrum interpolated.
+                                                                      [DONE]
+  Initialising halos... 
+                                                                      [DONE]
+Generating the density field and the inverted density field...   Initialising mesh... 
+  The density field is initialised.
+Up to there it took 1.000000 seconds
+  Generating Fourier modes ... 
+  Density field in Fourier space is generated.
+  Executing FFT ... 
+  FFT finished successfully.
+                                                                      [DONE]
+Up to there it took 686.000000 seconds
+Populating with haloes the normal mesh...                             [DONE]
+Up to there it took 24.000000 seconds
+Saving haloes ... 
+  Filename : /home/epfl/variu/phd/voids/chengscodes/linhalo_fix_ampl_CIC/output/halos_G2048CIC_BS2500_S1001000_6214031.dat.
+                                                                      [DONE]
+Everything took 719.000000 seconds

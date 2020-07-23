@@ -1,0 +1,34 @@
+Loading configurations ... 
+  Configuration file: linhalo.conf
+  [36;1mPK_INPUT[0m = /home/epfl/variu/phd/voids/chengscodes/linhalo_fix_ampl_CIC/input/EisensteinHu_Pnw.txt
+  [36;1mNGRID[0m = 2048
+  [36;1mBOXSIZE[0m = 2500
+  [36;1mSEED[0m = 1001000
+  [36;1mNHALO[0m = 100
+  [36;1mOUTPUT[0m = /home/epfl/variu/phd/voids/chengscodes/linhalo_fix_ampl_CIC/output/halos_G2048CIC_BS2500_S1001000_6214031.dat
+  [36;1mSAVE_DENS[0m = 0
+  [36;1mFORCE[0m = 0
+[70C[[32;1mDONE[0m]
+Processing the linear power spectrum ... 
+  Filename: /home/epfl/variu/phd/voids/chengscodes/linhalo_fix_ampl_CIC/input/EisensteinHu_Pnw.txt
+  Counting lines ...  Number of records: 7860.
+  Reading ...   7860 valid lines recorded.
+  Power spectrum interpolated.
+[70C[[32;1mDONE[0m]
+  Initialising halos... 
+[70C[[32;1mDONE[0m]
+Generating the density field and the inverted density field...   Initialising mesh... 
+  The density field is initialised.
+Up to there it took 0.000000 seconds
+  Generating Fourier modes ... 
+  Density field in Fourier space is generated.
+  Executing FFT ... 
+  FFT finished successfully.
+[70C[[32;1mDONE[0m]
+Up to there it took 697.000000 seconds
+Populating with haloes the normal mesh... [70C[[32;1mDONE[0m]
+Up to there it took 175.000000 seconds
+Saving haloes ... 
+  Filename : /home/epfl/variu/phd/voids/chengscodes/linhalo_fix_ampl_CIC/output/halos_G2048CIC_BS2500_S1001000_6214031.dat.
+[70C[[32;1mDONE[0m]
+Everything took 879.000000 seconds
