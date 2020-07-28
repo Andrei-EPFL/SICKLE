@@ -30,7 +30,6 @@ int init_halos(const long int, HALOS **);
 
 int save_halo(const char *, HALOS *, const size_t);
 
-
 double return_x(double );
 void function_test();
 
@@ -41,7 +40,9 @@ int init_field(const int, fftw_complex **, fftw_plan *);
 int gauss_ran_field(const CONF *, const double *, const double *,
     const size_t, fftw_plan *, fftw_complex *);
 
-void qsort_dens(fftw_complex *, const size_t);
+void qsort_dens_asc(fftw_complex *, const size_t);
+
+void qsort_dens_desc(fftw_complex *, const size_t);
 
 void select_dens(fftw_complex *, HALOS *, const int, const size_t, const double);
 
@@ -54,7 +55,9 @@ int init_field(const int, fftwf_complex **, fftwf_plan *);
 int gauss_ran_field(const CONF *, const double *, const double *,
     const size_t, fftwf_plan *, fftwf_complex *);
 
-void qsort_dens(fftwf_complex *, const size_t);
+void qsort_dens_asc(fftwf_complex *, const size_t, int);
+
+void qsort_dens_desc(fftwf_complex *, const size_t, int);
 
 void select_dens(fftwf_complex *, HALOS *, const int, const size_t, const double);
 

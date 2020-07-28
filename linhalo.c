@@ -43,7 +43,6 @@ int main(int argc, char *argv[]) {
   }
   printf(FMT_DONE);
   
-
   if ((ecode = init_halos(conf.Nhalo, &halos))) {
     P_EXT("failed to generate the halos.\n");
     return ecode;
@@ -60,10 +59,7 @@ int main(int argc, char *argv[]) {
   float seconds = (float)(end - start);
   printf("Up to there it took %f seconds\n", seconds);
   fflush(stdout);
-  
-  sleep(20);
-  return 0;
-
+    
   start = time(NULL);
   if ((ecode = gauss_ran_field(&conf, k, P, Nk, &fp, mesh))) {
     P_EXT("failed to generate the density field.\n");
@@ -89,24 +85,24 @@ int main(int argc, char *argv[]) {
   printf("Up to there it took %f seconds\n", seconds);
   fflush(stdout);
   
-  printf("Saving haloes ... ");
-  fflush(stdout);
-  if ((ecode = save_halo(conf.output, halos, conf.Nhalo))) {
-    P_EXT("failed to generate the halo catalogue.\n");
-    return ecode;
-  }
+  // printf("Saving haloes ... ");
+  // fflush(stdout);
+  // if ((ecode = save_halo(conf.output, halos, conf.Nhalo))) {
+  //   P_EXT("failed to generate the halo catalogue.\n");
+  //   return ecode;
+  // }
   free(halos);
   printf(FMT_DONE);
 
-  if (conf.savedm) {
-    printf("Saving the density field ... ");
-    fflush(stdout);
-    if ((ecode = save_dens(conf.dmout, mesh, conf.lowNg))) {
-      P_EXT("failed to save the density field.\n");
-      return ecode;
-    }
-    printf(FMT_DONE);
-  }
+  // if (conf.savedm) {
+  //   printf("Saving the density field ... ");
+  //   fflush(stdout);
+  //   if ((ecode = save_dens(conf.dmout, mesh, conf.lowNg))) {
+  //     P_EXT("failed to save the density field.\n");
+  //     return ecode;
+  //   }
+  //   printf(FMT_DONE);
+  // }
 
 #ifdef DOUBLE_PREC
   fftw_free(mesh);

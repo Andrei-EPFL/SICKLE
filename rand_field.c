@@ -79,7 +79,7 @@ int init_field(const int Ngrid, fftwf_complex **mesh, fftwf_plan *plan)
 int init_halos(const long int Nh, HALOS **halos) {
   printf("  Initialising halos... \n");
   fflush(stdout);
-
+  
   //(ptr) = (type *) malloc(sizeof(type) * (n));
   *halos = malloc( sizeof(HALOS) * Nh );
   
