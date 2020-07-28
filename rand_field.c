@@ -1,5 +1,6 @@
 #include "linhalo.h"
-#include <math.h>
+#include "fftw_define.h"
+//#include <math.h>
 #include <gsl/gsl_rng.h>
 #include <gsl/gsl_randist.h>
 #include <gsl/gsl_spline.h>
@@ -28,49 +29,28 @@ int init_pk(double *k, double *P, const size_t Nk, const CONF *conf) {
   return 0;
 }
 
-#ifdef DOUBLE_PREC
-int init_field(const int Ngrid, fftw_complex **mesh, fftw_plan *plan)
-#else
-int init_field(const int Ngrid, fftwf_complex **mesh, fftwf_plan *plan)
-#endif
+int init_field(const int Ngrid, FFT_CMPLX **mesh, FFT_PLAN *plan)
 {
   size_t size = (size_t) Ngrid * Ngrid * Ngrid;
 
   printf("  Initialising mesh... \n");
   fflush(stdout);
 
-#ifdef DOUBLE_PREC
-  *mesh = fftw_malloc(sizeof(fftw_complex) * size);
-#else
-  *mesh = fftwf_malloc(sizeof(fftwf_complex) * size);
-#endif
+  *mesh = FFT_MALLOC(sizeof(FFT_CMPLX) * size);
   if (!(*mesh)) {
     P_ERR("failed to allocate memory for the density field.\n");
     return ERR_MEM;
   }
 
-#ifdef DOUBLE_PREC
 #ifdef OMP
-  if (fftw_init_threads() == 0) {
+  if (FFT_INIT_OMP() == 0) {
     P_ERR("failed to initialize FFTW with OpenMP.\n");
     return ERR_OTHER;
   }
-  fftw_plan_with_nthreads(omp_get_max_threads());
+  FFT_PLAN_OMP(omp_get_max_threads());
 #endif
-  *plan = fftw_plan_dft_3d(Ngrid, Ngrid, Ngrid, *mesh, *mesh,
+  *plan = FFT_PLAN_C2C(Ngrid, Ngrid, Ngrid, *mesh, *mesh,
       FFTW_BACKWARD, FFTW_ESTIMATE);
-#else
-#ifdef OMP
-  if (fftwf_init_threads() == 0) {
-    P_ERR("failed to initialize FFTW with OpenMP.\n");
-    return ERR_OTHER;
-  }
-  fftwf_plan_with_nthreads(omp_get_max_threads());
-#endif
-
-  *plan = fftwf_plan_dft_3d(Ngrid, Ngrid, Ngrid, *mesh, *mesh,
-      FFTW_BACKWARD, FFTW_ESTIMATE);
-#endif
 
   printf("\r  The density field is initialised.\n");
   return 0;
@@ -90,13 +70,22 @@ int init_halos(const long int Nh, HALOS **halos) {
   return 0;
 }
 
+int init_index_arr(const long int Nh, size_t **index_arr) {
+  printf("  Initialising index_arr... \n");
+  fflush(stdout);
+  
+  //(ptr) = (type *) malloc(sizeof(type) * (n));
+  *index_arr = malloc( sizeof(size_t) * 8 * Nh );
+  
+  if (!(*index_arr)) {
+    P_ERR("failed to allocate memory for the index_arr.\n");
+    return ERR_MEM;
+  }
+  return 0;
+}
+
 int gauss_ran_field(const CONF *conf, const double *lnk, const double *lnP,
-#ifdef DOUBLE_PREC
-    const size_t Nk, fftw_plan *fp, fftw_complex *mesh
-#else
-    const size_t Nk, fftwf_plan *fp, fftwf_complex *mesh
-#endif
-    ) {
+    const size_t Nk, FFT_PLAN *fp, FFT_CMPLX *mesh) {
   int i, j, k, i_2, j_2, k_2;
   size_t idx, idx_2;
   double fac, norm, fac2, ki, kj, kk, ksq, kv, P, theta;
@@ -241,18 +230,10 @@ int gauss_ran_field(const CONF *conf, const double *lnk, const double *lnP,
   printf("\r  Executing FFT ... \n");
   fflush(stdout);
 
-#ifdef DOUBLE_PREC
-  fftw_execute(*fp);
-  fftw_destroy_plan(*fp);
+  FFT_EXEC_C2C(*fp);
+  FFT_DESTROY(*fp);
 #ifdef OMP
-  fftw_cleanup_threads();
-#endif
-#else
-  fftwf_execute(*fp);
-  fftwf_destroy_plan(*fp);
-#ifdef OMP
-  fftwf_cleanup_threads();
-#endif
+  FFT_CLEAN_OMP();
 #endif
 
   printf("\r  FFT finished successfully.\n");
@@ -274,12 +255,7 @@ int gauss_ran_field(const CONF *conf, const double *lnk, const double *lnP,
   return 0;
 }
 
-#ifdef DOUBLE_PREC
-int save_dens(const char *fname, fftw_complex *mesh, const int Ng)
-#else
-int save_dens(const char *fname, fftwf_complex *mesh, const int Ng)
-#endif
-{
+int save_dens(const char *fname, FFT_CMPLX *mesh, const int Ng) {
   FILE *fp;
   size_t i, Ntot;
 
@@ -297,7 +273,7 @@ int save_dens(const char *fname, fftwf_complex *mesh, const int Ng)
     return ERR_FILE;
   }
 
-  if (fwrite(mesh, sizeof(real) * Ntot, 1, fp) != 1) {
+  if (fwrite(mesh, sizeof(FFT_REAL) * Ntot, 1, fp) != 1) {
     P_EXT("failed to write density field to file `%s'.\n", fname);
     return ERR_FILE;
   }

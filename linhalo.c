@@ -1,20 +1,19 @@
 #include "load_conf.h"
 #include "linhalo.h"
+#include "fftw_define.h"
 #include <unistd.h>
 
 int main(int argc, char *argv[]) {
   int ecode;
   double *k, *P;
   size_t Nk;
+  size_t *index_arr;
   HALOS *halos;
   CONF conf;
-#ifdef DOUBLE_PREC
-  fftw_complex *mesh;
-  fftw_plan fp;
-#else
-  fftwf_complex *mesh;
-  fftwf_plan fp;
-#endif
+
+  FFT_CMPLX *mesh;
+  FFT_PLAN fp;
+
   time_t startall = time(NULL);
   time_t start = time(NULL);
 
@@ -48,6 +47,12 @@ int main(int argc, char *argv[]) {
     return ecode;
   }
   printf(FMT_DONE);
+
+  if ((ecode = init_index_arr(conf.Nhalo, &index_arr))) {
+    P_EXT("failed to generate the index_arr.\n");
+    return ecode;
+  }
+  printf(FMT_DONE);
   
   printf("Generating the density field and the inverted density field... ");
   fflush(stdout);
@@ -77,7 +82,7 @@ int main(int argc, char *argv[]) {
   
   printf("Populating with haloes the normal mesh... ");
   fflush(stdout);
-  select_dens(mesh, halos, conf.Ngrid, conf.Nhalo, conf.Lbox);
+  select_dens(mesh, halos, index_arr, conf.Ngrid, conf.Nhalo, conf.Lbox);
   fflush(stdout);
   printf(FMT_DONE);
   end = time(NULL);
@@ -104,11 +109,7 @@ int main(int argc, char *argv[]) {
   //   printf(FMT_DONE);
   // }
 
-#ifdef DOUBLE_PREC
-  fftw_free(mesh);
-#else
-  fftwf_free(mesh);
-#endif
+  FFT_FREE(mesh);
   time_t endall = time(NULL);
   printf("Everything took %f seconds\n", (float)(endall - startall));
   return 0;

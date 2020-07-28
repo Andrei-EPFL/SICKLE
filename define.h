@@ -68,10 +68,5 @@
 /******************************************************************************
   Definitions for data types.
 ******************************************************************************/
-#ifdef DOUBLE_PREC
-typedef double real;
-#else
-typedef float real;
-#endif
 
 #endif

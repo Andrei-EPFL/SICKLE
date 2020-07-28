@@ -6,18 +6,13 @@
 
 
 /* Quicksort the fist N imaginary elements of mesh. */
-#ifdef DOUBLE_PREC
-void qsort_dens_asc(fftw_complex *mesh, const size_t N)
-#else
-void qsort_dens_asc(fftwf_complex *mesh, const size_t N, int index)
-#endif
-{
+void qsort_dens_asc(FFT_CMPLX *mesh, size_t *index_arr, const size_t N, int index) {
   //const int index = 1; //This index tells us if we sort the imaginary(1) part or real(0) one 
   const int M = 7;
   const int NSTACK = 64;
   long istack[NSTACK];
   long i, ir, j, k, jstack, l;
-  real a, tmp;
+  size_t a, tmp;
 
   jstack = -1;
   l = 0;
@@ -26,12 +21,12 @@ void qsort_dens_asc(fftwf_complex *mesh, const size_t N, int index)
   for (;;) {
     if (ir - l < M) {
       for (j = l + 1; j <= ir; j++) {
-        a = mesh[j][index];
+        a = index_arr[j];
         for (i = j - 1; i >= l; i--) {
-          if (mesh[i][index] <= a) break;
-          mesh[i + 1][index] = mesh[i][index];
+          if (mesh[index_arr[i]][index] <= mesh[a][index]) break;
+          index_arr[i + 1] = index_arr[i];
         }
-        mesh[i + 1][index] = a;
+        index_arr[i + 1] = a;
       }
       if (jstack < 0) break;
       ir = istack[jstack--];
@@ -39,27 +34,27 @@ void qsort_dens_asc(fftwf_complex *mesh, const size_t N, int index)
     }
     else {
       k = (l + ir) >> 1;
-      SWAP(mesh[k][index], mesh[l + 1][index], tmp);
-      if (mesh[l][index] > mesh[ir][index]) {
-        SWAP(mesh[l][index], mesh[ir][index], tmp);
+      SWAP(index_arr[k], index_arr[l + 1], tmp);
+      if (mesh[index_arr[l]][index] > mesh[index_arr[ir]][index]) {
+        SWAP(index_arr[l], index_arr[ir], tmp);
       }
-      if (mesh[l + 1][index] > mesh[ir][index]) {
-        SWAP(mesh[l + 1][index], mesh[ir][index], tmp);
+      if (mesh[index_arr[l + 1]][index] > mesh[index_arr[ir]][index]) {
+        SWAP(index_arr[l + 1], index_arr[ir], tmp);
       }
-      if (mesh[l][index] > mesh[l + 1][index]) {
-        SWAP(mesh[l][index], mesh[l + 1][index], tmp);
+      if (mesh[index_arr[l]][index] > mesh[index_arr[l + 1]][index]) {
+        SWAP(index_arr[l], index_arr[l + 1], tmp);
       }
       i = l + 1;
       j = ir;
-      a = mesh[l + 1][index];
+      a = index_arr[l + 1];
       for (;;) {
-        do i++; while (mesh[i][index] < a);
-        do j--; while (mesh[j][index] > a);
+        do i++; while (mesh[index_arr[i]][index] < mesh[a][index]);
+        do j--; while (mesh[index_arr[j]][index] > mesh[a][index]);
         if (j < i) break;
-        SWAP(mesh[i][index], mesh[j][index], tmp);
+        SWAP(index_arr[i], index_arr[j], tmp);
       }
-      mesh[l + 1][index] = mesh[j][index];
-      mesh[j][index] = a;
+      index_arr[l + 1] = index_arr[j];
+      index_arr[j] = a;
       jstack += 2;
       if (jstack >= NSTACK) {
         P_EXT("NSTACK for qsort is too small.\n");
@@ -79,18 +74,13 @@ void qsort_dens_asc(fftwf_complex *mesh, const size_t N, int index)
   }
 }
 
-#ifdef DOUBLE_PREC
-void qsort_dens_desc(fftw_complex *mesh, const size_t N)
-#else
-void qsort_dens_desc(fftwf_complex *mesh, const size_t N, int index)
-#endif
-{
+void qsort_dens_desc(FFT_CMPLX *mesh, size_t *index_arr, const size_t N, int index) {
   //const int index = 1; //This index tells us if we sort the imaginary(1) part or real(0) one 
    const int M = 7;
   const int NSTACK = 64;
   long istack[NSTACK];
   long i, ir, j, k, jstack, l;
-  real a, tmp;
+  size_t a, tmp;
 
   jstack = -1;
   l = 0;
@@ -99,12 +89,12 @@ void qsort_dens_desc(fftwf_complex *mesh, const size_t N, int index)
   for (;;) {
     if (ir - l < M) {
       for (j = l + 1; j <= ir; j++) {
-        a = mesh[j][index];
+        a = index_arr[j];
         for (i = j - 1; i >= l; i--) {
-          if (mesh[i][index] >= a) break;
-          mesh[i + 1][index] = mesh[i][index];
+          if (mesh[index_arr[i]][index] >= mesh[a][index]) break;
+          index_arr[i + 1] = index_arr[i];
         }
-        mesh[i + 1][index] = a;
+        index_arr[i + 1] = a;
       }
       if (jstack < 0) break;
       ir = istack[jstack--];
@@ -112,27 +102,27 @@ void qsort_dens_desc(fftwf_complex *mesh, const size_t N, int index)
     }
     else {
       k = (l + ir) >> 1;
-      SWAP(mesh[k][index], mesh[l + 1][index], tmp);
-      if (mesh[l][index] < mesh[ir][index]) {
-        SWAP(mesh[l][index], mesh[ir][index], tmp);
+      SWAP(index_arr[k], index_arr[l + 1], tmp);
+      if (mesh[index_arr[l]][index] < mesh[index_arr[ir]][index]) {
+        SWAP(index_arr[l], index_arr[ir], tmp);
       }
-      if (mesh[l + 1][index] < mesh[ir][index]) {
-        SWAP(mesh[l + 1][index], mesh[ir][index], tmp);
+      if (mesh[index_arr[l + 1]][index] < mesh[index_arr[ir]][index]) {
+        SWAP(index_arr[l + 1], index_arr[ir], tmp);
       }
-      if (mesh[l][index] < mesh[l + 1][index]) {
-        SWAP(mesh[l][index], mesh[l + 1][index], tmp);
+      if (mesh[index_arr[l]][index] < mesh[index_arr[l + 1]][index]) {
+        SWAP(index_arr[l], index_arr[l + 1], tmp);
       }
       i = l + 1;
       j = ir;
-      a = mesh[l + 1][index];
+      a = index_arr[l + 1];
       for (;;) {
-        do i++; while (mesh[i][index] > a);
-        do j--; while (mesh[j][index] < a);
+        do i++; while (mesh[index_arr[i]][index] > mesh[a][index]);
+        do j--; while (mesh[index_arr[j]][index] < mesh[a][index]);
         if (j < i) break;
-        SWAP(mesh[i][index], mesh[j][index], tmp);
+        SWAP(index_arr[i], index_arr[j], tmp);
       }
-      mesh[l + 1][index] = mesh[j][index];
-      mesh[j][index] = a;
+      index_arr[l + 1] = index_arr[j];
+      index_arr[j] = a;
       jstack += 2;
       if (jstack >= NSTACK) {
         P_EXT("NSTACK for qsort is too small.\n");
@@ -152,97 +142,119 @@ void qsort_dens_desc(fftwf_complex *mesh, const size_t N, int index)
   }
 }
 
+size_t binary_search(FFT_CMPLX *mesh, size_t *index_arr, size_t l, size_t r, FFT_REAL x, size_t notfound) {
+  size_t m;
+  
+  while (l <= r) { 
+    m = l + (r - l) / 2; 
+    // Check if x is present at mid 
+    if (mesh[index_arr[m]][0] == x) 
+      return m; 
+
+    // If x smaller, ignore left half 
+    if (mesh[index_arr[m]][0] > x) 
+      l = m + 1; 
+
+    // If x is larger, ignore right half 
+    else
+      r = m - 1; 
+  } 
+
+  // if we reach here, then element was 
+  // not present
+  return notfound; 
+} 
 
 double return_x(double y) {
   if(y < 0.5) return sqrt(2 * y) - 1;
   else return 1 - sqrt(2 * (1 - y));
 }
 
-
-// void function_test() {
-//   gsl_rng *r;
-//   r = gsl_rng_alloc(gsl_rng_mt19937);
-//   gsl_rng_set(r, 49823);
-//   for(int i=0; i<10; i++) {
-//     double y = gsl_ran_flat(r, 0, 1);
-//     printf("%lf\n", return_x(y));
-//   }
-  
-//   gsl_rng_free(r);
-
-// }
-
-/******************************************************************************
-Function `cic`:
-  Assign particles to the mesh with the Could-In-Cell scheme.
-Arguments:
-  * `data`:     structure for the data sample;
-  * `ndata`:    number of objects in the sample;
-  * `Ng`:       number of grid cells per box side;
-  * `bmin`:     lower boundaries of the box;
-  * `Lbox`:     side length of the box;
-  * `rho`:      the mesh.
-******************************************************************************/
-
-#ifdef DOUBLE_PREC
-static void cic(fftw_complex *mesh, double x, double y, double z, const int Ng,
-    const double Lbox)
-#else
-static void cic(fftwf_complex *mesh, double x, double y, double z, const int Ng,
-    const double Lbox)
-#endif
-{
-  size_t Ntot;
-  Ntot = (size_t) Ng * Ng * Ng;
-
-  double mesh_x = x * Ng / Lbox;
-  double mesh_y = y * Ng / Lbox;
-  double mesh_z = z * Ng / Lbox;
+static void cic(FFT_CMPLX *mesh, size_t *index_arr, double x, double y, double z, const int Ng, const size_t Nh, const double Lbox) {
+  //size_t Ntot;
+  //Ntot = (size_t) Ng * Ng * Ng;
+    
+  FFT_REAL mesh_x = x * Ng / Lbox;
+  FFT_REAL mesh_y = y * Ng / Lbox;
+  FFT_REAL mesh_z = z * Ng / Lbox;
 
   int x0 = (int) mesh_x;
   int y0 = (int) mesh_y;
   int z0 = (int) mesh_z;
-
-  printf("\nidx:%f %f %f\n", x,y,z);
+  printf("\n %d %d %d", (int) x0, (int) y0, (int) z0);
+  printf("\n %f %f %f", mesh_x, mesh_y, mesh_z);
+  //printf("\nidx:%f %f %f\n", x,y,z);
   
   /* Weights for neighbours. */
-  double wx1 = mesh_x - x0;
-  double wx0 = 1 - wx1;
-  double wy1 = mesh_y - y0;
-  double wy0 = 1 - wy1;
-  double wz1 = mesh_z - z0;
-  double wz0 = 1 - wz1;
+  FFT_REAL wx1 = mesh_x - x0;
+  FFT_REAL wx0 = 1 - wx1;
+  FFT_REAL wy1 = mesh_y - y0;
+  FFT_REAL wy0 = 1 - wy1;
+  FFT_REAL wz1 = mesh_z - z0;
+  FFT_REAL wz0 = 1 - wz1;
 
   int x1 = (x0 == Ng - 1) ? 0 : x0 + 1;
   int y1 = (y0 == Ng - 1) ? 0 : y0 + 1;
   int z1 = (z0 == Ng - 1) ? 0 : z0 + 1;
 
-  //mesh[MESH_IDX(Ng,x0,y0,z0)][0] -= wx0 * wy0 * wz0;
-  mesh[MESH_IDX(Ng,x0,y0,z1)][0] -= wx0 * wy0 * wz1;
-  printf(" \nVAL:%d \n", MESH_IDX(Ng,x0,y0,z1));
+  size_t idx1 = binary_search(mesh, index_arr, (size_t)0, 8 * Nh - 1, mesh[MESH_IDX(Ng,x0,y0,z0)][0], 8 * Nh);
+  if(idx1 != 8 * Nh) {
+    mesh[MESH_IDX(Ng,x0,y0,z0)][0] -= wx0 * wy0 * wz0;
+    
+    if(mesh[index_arr[idx1]][0] < )
+  }
   
-  // mesh[MESH_IDX(Ng,x0,y1,z0)][0] -= wx0 * wy1 * wz0;
+
+  // size_t idx2 = binary_search(mesh, index_arr, (size_t)0, 8 * Nh - 1, mesh[MESH_IDX(Ng,x0,y0,z1)][0]);
+   
+  // size_t idx3 = binary_search(mesh, index_arr, (size_t)0, 8 * Nh - 1, mesh[MESH_IDX(Ng,x0,y1,z0)][0]);
+   
+  // size_t idx4 = binary_search(mesh, index_arr, (size_t)0, 8 * Nh - 1, mesh[MESH_IDX(Ng,x0,y1,z1)][0]);
+   
+
+  // size_t idx5 = binary_search(mesh, index_arr, (size_t)0, 8 * Nh - 1, mesh[MESH_IDX(Ng,x1,y0,z0)][0]);
+   
+  // size_t idx6 = binary_search(mesh, index_arr, (size_t)0, 8 * Nh - 1, mesh[MESH_IDX(Ng,x1,y0,z1)][0]);
+   
+  // size_t idx7 = binary_search(mesh, index_arr, (size_t)0, 8 * Nh - 1, mesh[MESH_IDX(Ng,x1,y1,z0)][0]);
+   
+  // size_t idx8 = binary_search(mesh, index_arr, (size_t)0, 8 * Nh - 1, mesh[MESH_IDX(Ng,x1,y1,z1)][0]);
+  // mesh[MESH_IDX(Ng,x0,y0,z1)][0] -= wx0 * wy0 * wz1;
+  // printf("\n%f", mesh[index_arr[0]][0]);
+  // printf("\nId: %d Value: %f and Position %d;", (int)MESH_IDX(Ng,x0,y0,z1), mesh[MESH_IDX(Ng,x0,y0,z1)][0], (int)idx2);
+  
+  // mesh[MESH_IDX(Ng,x0,y1,z0)][0] -= wx0 * wy1 * wz0; 
+  // printf("\n%f", mesh[index_arr[0]][0]);
+  // printf("\nId: %d Value: %f and Position %d;", (int)MESH_IDX(Ng,x0,y1,z0), mesh[MESH_IDX(Ng,x0,y1,z0)][0], (int)idx3);
+  
   // mesh[MESH_IDX(Ng,x0,y1,z1)][0] -= wx0 * wy1 * wz1;
-  // mesh[MESH_IDX(Ng,x1,y0,z0)][0] -= wx1 * wy0 * wz0;
-  // mesh[MESH_IDX(Ng,x1,y0,z1)][0] -= wx1 * wy0 * wz1;
-  // mesh[MESH_IDX(Ng,x1,y1,z0)][0] -= wx1 * wy1 * wz0;
-  // mesh[MESH_IDX(Ng,x1,y1,z1)][0] -= wx1 * wy1 * wz1;
-  //insertion_sort(mesh, Ntot, (size_t)MESH_IDX(Ng,x0,y0,z0));
+  // printf("\n%f", mesh[index_arr[0]][0]);
+  // printf("\nId: %d Value: %f and Position %d;", (int)MESH_IDX(Ng,x0,y1,z1), mesh[MESH_IDX(Ng,x0,y1,z1)][0], (int)idx4);
   
+  // mesh[MESH_IDX(Ng,x1,y0,z0)][0] -= wx1 * wy0 * wz0;
+  // printf("\n%f", mesh[index_arr[0]][0]);
+  // printf("\nId: %d Value: %f and Position %d;", (int)MESH_IDX(Ng,x1,y0,z0), mesh[MESH_IDX(Ng,x1,y0,z0)][0], (int)idx5);
+
+  // mesh[MESH_IDX(Ng,x1,y0,z1)][0] -= wx1 * wy0 * wz1;
+  // printf("\n%f", mesh[index_arr[0]][0]);
+  // printf("\nId: %d Value: %f and Position %d;", (int)MESH_IDX(Ng,x1,y0,z1), mesh[MESH_IDX(Ng,x1,y0,z1)][0], (int)idx6);
+
+  // mesh[MESH_IDX(Ng,x1,y1,z0)][0] -= wx1 * wy1 * wz0;
+  // printf("\n%f", mesh[index_arr[0]][0]);
+  // printf("\nId: %d Value: %f and Position %d;", (int)MESH_IDX(Ng,x1,y1,z0), mesh[MESH_IDX(Ng,x1,y1,z0)][0], (int)idx7);
+
+  // mesh[MESH_IDX(Ng,x1,y1,z1)][0] -= wx1 * wy1 * wz1;
+  // printf("\n%f", mesh[index_arr[0]][0]);
+  // printf("\nId: %d Value: %f and Position %d;", (int)MESH_IDX(Ng,x1,y1,z1), mesh[MESH_IDX(Ng,x1,y1,z1)][0], (int)idx8);
 }
 
 
-#ifdef DOUBLE_PREC
-void select_dens(fftw_complex *mesh, HALOS *halos, const int Ng,
-    const size_t Nh, const double Lbox)
-#else
-void select_dens(fftwf_complex *mesh, HALOS *halos, const int Ng,
-    const size_t Nh, const double Lbox)
-#endif
-{
-  size_t i, j, k, idx, Ntot, idx_val;
+
+void select_dens(FFT_CMPLX *mesh, HALOS *halos, size_t *index_arr, const int Ng,
+    const size_t Nh, const double Lbox) {
+  size_t i, j, k, idx_max, Ntot, idx_val;
   double x, y, z;
-  real tmp;
+  FFT_REAL tmp;
 
   Ntot = (size_t) Ng * Ng * Ng;
 
@@ -253,44 +265,49 @@ void select_dens(fftwf_complex *mesh, HALOS *halos, const int Ng,
 #ifdef OMP
 #pragma omp parallel for
 #endif
-  for (i = 0; i < 8 * Nh; i++) mesh[i][1] = mesh[i][0];
+  for (i = 0; i < 8 * Nh; i++) index_arr[i] = i;
   
-  qsort_dens_asc(mesh, 8 * Nh, 1);
-  
+  qsort_dens_asc(mesh, index_arr, 8 * Nh, 0);
+    
   for (i = 8 * Nh; i < Ntot; i++) {
-    if (mesh[i][0] > mesh[0][1]) {
-      mesh[0][1] = mesh[i][0];
+    if (mesh[i][0] > mesh[index_arr[0]][0]) {
+      index_arr[0] = i;
       for (j = 0;;) {
         k = (j << 1) + 1;
         if (k > 8 * Nh - 1) break;
-        if (k != 8 * Nh - 1 && mesh[k][1] > mesh[k + 1][1]) ++k;
-        if (mesh[j][1] <= mesh[k][1]) break;
-        SWAP(mesh[k][1], mesh[j][1], tmp);
+        if (k != 8 * Nh - 1 && mesh[index_arr[k]][0] > mesh[index_arr[k + 1]][0]) ++k;
+        if (mesh[index_arr[j]][0] <= mesh[index_arr[k]][0]) break;
+        SWAP(index_arr[k], index_arr[j], tmp);
         j = k;
       }
     }
   }
-  qsort_dens_desc(mesh, 8 * Nh, 1);
-  qsort_dens_desc(mesh, Ntot, 0);
-  
-  
-  // for (int u = 0; u < Nh; u++) {
+  qsort_dens_desc(mesh, index_arr, 8 * Nh, 0);
 
-  //   idx = 0;
-  //   idx_val = mesh[idx][1];
-  //   k = idx_val/(Ng * Ng);
-  //   j = (idx_val - k * Ng * Ng) / Ng;
-  //   i = idx_val - k * Ng * Ng - j * Ng;
-  //   printf("\n%d %d %f\n", idx_val, MESH_IDX(Ng, i, j, k), mesh[idx_val][0]);
-  //   x = gsl_ran_flat(r, 0, 1);
-  //   y = gsl_ran_flat(r, 0, 1);
-  //   z = gsl_ran_flat(r, 0, 1);
-  //   halos[u].x[0] = Lbox * (i + return_x(x)) / Ng;
-  //   halos[u].x[1] = Lbox * (j + return_x(y)) / Ng;
-  //   halos[u].x[2] = Lbox * (k + return_x(z)) / Ng;
+  for(i = 0; i < 8*Nh; i++)
+  {
+    printf("\n%d %f %d %f", (int)i, mesh[i][0], (int)index_arr[i], mesh[index_arr[i]][0] );
+  }
+
+  
+  for (size_t u = 0; u < 1; u++) {
+    printf("\n");
+    idx_max = 0;
+    idx_val = index_arr[idx_max];
+    k = idx_val/(size_t)(Ng * Ng);
+    j = (idx_val - (size_t)k * Ng * Ng) / (size_t)Ng;
+    i = idx_val - (size_t)k * Ng * Ng - (size_t)j * Ng;
     
-  //   //cic(mesh, halos[u].x[0], halos[u].x[1], halos[u].x[2], Ng, Lbox);
-  // }
+    x = gsl_ran_flat(r, 0, 1);
+    y = gsl_ran_flat(r, 0, 1);
+    z = gsl_ran_flat(r, 0, 1);
+    
+    halos[u].x[0] = Lbox * (i + return_x(x)) / Ng;
+    halos[u].x[1] = Lbox * (j + return_x(y)) / Ng;
+    halos[u].x[2] = Lbox * (k + return_x(z)) / Ng;
+    
+    cic(mesh, index_arr, halos[u].x[0], halos[u].x[1], halos[u].x[2], Ng, Nh, Lbox);
+  }
   
   gsl_rng_free(r);
   

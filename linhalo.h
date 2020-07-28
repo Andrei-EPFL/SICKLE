@@ -11,11 +11,13 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <fftw3.h>
+//#include <fftw3.h>
 #include <math.h>
 #include <time.h>
+#include "fftw_define.h"
 #include "define.h"
 #include "load_conf.h"
+
 
 
 typedef struct {
@@ -28,42 +30,26 @@ int init_pk(double *, double *, const size_t, const CONF *);
 
 int init_halos(const long int, HALOS **);
 
+int init_index_arr(const long int, size_t **);
+
 int save_halo(const char *, HALOS *, const size_t);
 
 double return_x(double );
-void function_test();
 
-#ifdef DOUBLE_PREC
-
-int init_field(const int, fftw_complex **, fftw_plan *);
+int init_field(const int, FFT_CMPLX **, FFT_PLAN *);
 
 int gauss_ran_field(const CONF *, const double *, const double *,
-    const size_t, fftw_plan *, fftw_complex *);
+    const size_t, FFT_PLAN *, FFT_CMPLX *);
 
-void qsort_dens_asc(fftw_complex *, const size_t);
+void qsort_dens_asc(FFT_CMPLX *, size_t *, const size_t, int);
 
-void qsort_dens_desc(fftw_complex *, const size_t);
+void qsort_dens_desc(FFT_CMPLX *, size_t *, const size_t, int);
 
-void select_dens(fftw_complex *, HALOS *, const int, const size_t, const double);
+void select_dens(FFT_CMPLX *, HALOS *, size_t *, const int, const size_t, const double);
 
-int save_dens(const char *, fftw_complex *, const int);
+int save_dens(const char *, FFT_CMPLX *, const int);
 
-#else
-
-int init_field(const int, fftwf_complex **, fftwf_plan *);
-
-int gauss_ran_field(const CONF *, const double *, const double *,
-    const size_t, fftwf_plan *, fftwf_complex *);
-
-void qsort_dens_asc(fftwf_complex *, const size_t, int);
-
-void qsort_dens_desc(fftwf_complex *, const size_t, int);
-
-void select_dens(fftwf_complex *, HALOS *, const int, const size_t, const double);
-
-int save_dens(const char *, fftwf_complex *, const int);
-
-#endif
+size_t binary_search(FFT_CMPLX *, size_t *, size_t, size_t, FFT_REAL, size_t);
 
 size_t cnt_strcpy(char *, const char *, const size_t);
 
