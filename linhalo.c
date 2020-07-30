@@ -7,7 +7,7 @@ int main(int argc, char *argv[]) {
   int ecode;
   double *k, *P;
   size_t Nk;
-  size_t *index_arr;
+  INDEX *index_arr;
   HALOS *halos;
   CONF conf;
 
@@ -72,6 +72,7 @@ int main(int argc, char *argv[]) {
   }
   free(k);
   free(P);
+
   printf(FMT_DONE);
   end = time(NULL);
   seconds = (float)(end - start);
@@ -90,12 +91,12 @@ int main(int argc, char *argv[]) {
   printf("Up to there it took %f seconds\n", seconds);
   fflush(stdout);
   
-  // printf("Saving haloes ... ");
-  // fflush(stdout);
-  // if ((ecode = save_halo(conf.output, halos, conf.Nhalo))) {
-  //   P_EXT("failed to generate the halo catalogue.\n");
-  //   return ecode;
-  // }
+  printf("Saving haloes ... ");
+  fflush(stdout);
+  if ((ecode = save_halo(conf.output, halos, conf.Nhalo))) {
+    P_EXT("failed to generate the halo catalogue.\n");
+    return ecode;
+  }
   free(halos);
   printf(FMT_DONE);
 

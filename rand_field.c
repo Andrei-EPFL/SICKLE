@@ -70,12 +70,12 @@ int init_halos(const long int Nh, HALOS **halos) {
   return 0;
 }
 
-int init_index_arr(const long int Nh, size_t **index_arr) {
+int init_index_arr(const long int Nh, INDEX **index_arr) {
   printf("  Initialising index_arr... \n");
   fflush(stdout);
   
   //(ptr) = (type *) malloc(sizeof(type) * (n));
-  *index_arr = malloc( sizeof(size_t) * 8 * Nh );
+  *index_arr = malloc( sizeof(INDEX) * 8 * Nh );
   
   if (!(*index_arr)) {
     P_ERR("failed to allocate memory for the index_arr.\n");

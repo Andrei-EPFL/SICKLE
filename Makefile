@@ -1,5 +1,5 @@
 CC = gcc
-CFLAGS = -O3 -Wall -std=c99
+CFLAGS = -O3 -Wall -std=c99 -g
 #OPTS = -lfftw3f
 OPTS = -DSINGLE_PREC -lfftw3f -lfftw3f_omp -fopenmp -DOMP
 #OPTS = -DDOUBLE_PREC -lfftw3 -lfftw3_omp -fopenmp -DOMP
