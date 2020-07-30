@@ -6,13 +6,13 @@
 
 
 /* Quicksort the fist N imaginary elements of mesh. */
-void qsort_dens_asc(FFT_CMPLX *mesh, INDEX *index_arr, const size_t N, int index) {
+void qsort_dens_asc(FFT_CMPLX *mesh, size_t *index_arr, const size_t N, int index) {
   //const int index = 1; //This index tells us if we sort the imaginary(1) part or real(0) one 
   const int M = 7;
   const int NSTACK = 128;
   long istack[NSTACK];
   long i, ir, j, k, jstack, l;
-  INDEX a, tmp;
+  size_t a, tmp;
 
   jstack = -1;
   l = 0;
@@ -23,7 +23,7 @@ void qsort_dens_asc(FFT_CMPLX *mesh, INDEX *index_arr, const size_t N, int index
       for (j = l + 1; j <= ir; j++) {
         a = index_arr[j];
         for (i = j - 1; i >= l; i--) {
-          if (mesh[index_arr[i].val][index] <= mesh[a.val][index]) break;
+          if (mesh[index_arr[i]][index] <= mesh[a][index]) break;
           index_arr[i + 1] = index_arr[i];
         }
         index_arr[i + 1] = a;
@@ -35,21 +35,21 @@ void qsort_dens_asc(FFT_CMPLX *mesh, INDEX *index_arr, const size_t N, int index
     else {
       k = (l + ir) >> 1;
       SWAP(index_arr[k], index_arr[l + 1], tmp);
-      if (mesh[index_arr[l].val][index] > mesh[index_arr[ir].val][index]) {
+      if (mesh[index_arr[l]][index] > mesh[index_arr[ir]][index]) {
         SWAP(index_arr[l], index_arr[ir], tmp);
       }
-      if (mesh[index_arr[l + 1].val][index] > mesh[index_arr[ir].val][index]) {
+      if (mesh[index_arr[l + 1]][index] > mesh[index_arr[ir]][index]) {
         SWAP(index_arr[l + 1], index_arr[ir], tmp);
       }
-      if (mesh[index_arr[l].val][index] > mesh[index_arr[l + 1].val][index]) {
+      if (mesh[index_arr[l]][index] > mesh[index_arr[l + 1]][index]) {
         SWAP(index_arr[l], index_arr[l + 1], tmp);
       }
       i = l + 1;
       j = ir;
       a = index_arr[l + 1];
       for (;;) {
-        do i++; while (mesh[index_arr[i].val][index] < mesh[a.val][index]);
-        do j--; while (mesh[index_arr[j].val][index] > mesh[a.val][index]);
+        do i++; while (mesh[index_arr[i]][index] < mesh[a][index]);
+        do j--; while (mesh[index_arr[j]][index] > mesh[a][index]);
         if (j < i) break;
         SWAP(index_arr[i], index_arr[j], tmp);
       }
@@ -74,75 +74,7 @@ void qsort_dens_asc(FFT_CMPLX *mesh, INDEX *index_arr, const size_t N, int index
   }
 }
 
-void qsort_dens_desc(FFT_CMPLX *mesh, INDEX *index_arr, const size_t N, int index) {
-  //const int index = 1; //This index tells us if we sort the imaginary(1) part or real(0) one 
-   const int M = 7;
-  const int NSTACK = 128;
-  long istack[NSTACK];
-  long i, ir, j, k, jstack, l;
-  INDEX a, tmp;
-
-  jstack = -1;
-  l = 0;
-  ir = N - 1;
-
-  for (;;) {
-    if (ir - l < M) {
-      for (j = l + 1; j <= ir; j++) {
-        a = index_arr[j];
-        for (i = j - 1; i >= l; i--) {
-          if (mesh[index_arr[i].val][index] >= mesh[a.val][index]) break;
-          index_arr[i + 1] = index_arr[i];
-        }
-        index_arr[i + 1] = a;
-      }
-      if (jstack < 0) break;
-      ir = istack[jstack--];
-      l = istack[jstack--];
-    }
-    else {
-      k = (l + ir) >> 1;
-      SWAP(index_arr[k], index_arr[l + 1], tmp);
-      if (mesh[index_arr[l].val][index] < mesh[index_arr[ir].val][index]) {
-        SWAP(index_arr[l], index_arr[ir], tmp);
-      }
-      if (mesh[index_arr[l + 1].val][index] < mesh[index_arr[ir].val][index]) {
-        SWAP(index_arr[l + 1], index_arr[ir], tmp);
-      }
-      if (mesh[index_arr[l].val][index] < mesh[index_arr[l + 1].val][index]) {
-        SWAP(index_arr[l], index_arr[l + 1], tmp);
-      }
-      i = l + 1;
-      j = ir;
-      a = index_arr[l + 1];
-      for (;;) {
-        do i++; while (mesh[index_arr[i].val][index] > mesh[a.val][index]);
-        do j--; while (mesh[index_arr[j].val][index] < mesh[a.val][index]);
-        if (j < i) break;
-        SWAP(index_arr[i], index_arr[j], tmp);
-      }
-      index_arr[l + 1] = index_arr[j];
-      index_arr[j] = a;
-      jstack += 2;
-      if (jstack >= NSTACK) {
-        P_EXT("NSTACK for qsort is too small.\n");
-        exit(ERR_OTHER);
-      }
-      if (ir - i + 1 >= j - 1) {
-        istack[jstack] = ir;
-        istack[jstack - 1] = i;
-        ir = j - 1;
-      }
-      else {
-        istack[jstack] = j - 1;
-        istack[jstack - 1] = l;
-        l = i;
-      }
-    }
-  }
-}
-
-void qsort_idx_desc(INDEX *index_arr, const size_t N) {
+void qsort_dens_desc(FFT_CMPLX *mesh, size_t *index_arr, const size_t N, int index) {
   //const int index = 1; //This index tells us if we sort the imaginary(1) part or real(0) one 
    const int M = 7;
   const int NSTACK = 128;
@@ -157,12 +89,12 @@ void qsort_idx_desc(INDEX *index_arr, const size_t N) {
   for (;;) {
     if (ir - l < M) {
       for (j = l + 1; j <= ir; j++) {
-        a = index_arr[j].index;
+        a = index_arr[j];
         for (i = j - 1; i >= l; i--) {
-          if (index_arr[index_arr[i].index].val >= index_arr[a].val) break;
-          index_arr[i + 1].index = index_arr[i].index;
+          if (mesh[index_arr[i]][index] >= mesh[a][index]) break;
+          index_arr[i + 1] = index_arr[i];
         }
-        index_arr[i + 1].index = a;
+        index_arr[i + 1] = a;
       }
       if (jstack < 0) break;
       ir = istack[jstack--];
@@ -170,27 +102,27 @@ void qsort_idx_desc(INDEX *index_arr, const size_t N) {
     }
     else {
       k = (l + ir) >> 1;
-      SWAP(index_arr[k].index, index_arr[l + 1].index, tmp);
-      if (index_arr[index_arr[l].index].val < index_arr[index_arr[ir].index].val) {
-        SWAP(index_arr[l].index, index_arr[ir].index, tmp);
+      SWAP(index_arr[k], index_arr[l + 1], tmp);
+      if (mesh[index_arr[l]][index] < mesh[index_arr[ir]][index]) {
+        SWAP(index_arr[l], index_arr[ir], tmp);
       }
-      if (index_arr[index_arr[l + 1].index].val < index_arr[index_arr[ir].index].val) {
-        SWAP(index_arr[l + 1].index, index_arr[ir].index, tmp);
+      if (mesh[index_arr[l + 1]][index] < mesh[index_arr[ir]][index]) {
+        SWAP(index_arr[l + 1], index_arr[ir], tmp);
       }
-      if (index_arr[index_arr[l].index].val < index_arr[index_arr[l + 1].index].val) {
-        SWAP(index_arr[l].index, index_arr[l + 1].index, tmp);
+      if (mesh[index_arr[l]][index] < mesh[index_arr[l + 1]][index]) {
+        SWAP(index_arr[l], index_arr[l + 1], tmp);
       }
       i = l + 1;
       j = ir;
-      a = index_arr[l + 1].index;
+      a = index_arr[l + 1];
       for (;;) {
-        do i++; while (index_arr[index_arr[i].index].val > index_arr[a].val);
-        do j--; while (index_arr[index_arr[j].index].val < index_arr[a].val);
+        do i++; while (mesh[index_arr[i]][index] > mesh[a][index]);
+        do j--; while (mesh[index_arr[j]][index] < mesh[a][index]);
         if (j < i) break;
-        SWAP(index_arr[i].index, index_arr[j].index, tmp);
+        SWAP(index_arr[i], index_arr[j], tmp);
       }
-      index_arr[l + 1].index = index_arr[j].index;
-      index_arr[j].index = a;
+      index_arr[l + 1] = index_arr[j];
+      index_arr[j] = a;
       jstack += 2;
       if (jstack >= NSTACK) {
         P_EXT("NSTACK for qsort is too small.\n");
@@ -210,214 +142,214 @@ void qsort_idx_desc(INDEX *index_arr, const size_t N) {
   }
 }
 
-size_t binary_search(INDEX *index_arr, size_t l, size_t r, size_t x, size_t notfound) {
-  size_t m;
+// size_t binary_search(INDEX *index_arr, size_t l, size_t r, size_t x, size_t notfound) {
+//   size_t m;
   
-  while (l <= r) { 
-    m = l + (r - l) / 2; 
-    //printf("\n(%d %d %d)", (int)l, (int)m ,(int)r);
+//   while (l <= r) { 
+//     m = l + (r - l) / 2; 
+//     //printf("\n(%d %d %d)", (int)l, (int)m ,(int)r);
     
-    // Check if x is present at mid 
+//     // Check if x is present at mid 
     
-    if (index_arr[index_arr[m].index].val == x)
-      return m; 
-    // If x smaller, ignore left half 
-    if (index_arr[index_arr[m].index].val > x) 
-      l = m + 1; 
+//     if (index_arr[index_arr[m].index].val == x)
+//       return m; 
+//     // If x smaller, ignore left half 
+//     if (index_arr[index_arr[m].index].val > x) 
+//       l = m + 1; 
 
-    // If x is larger, ignore right half 
-    else
-    {
-      if (m == 0) {
-        //printf("\nCACACACA");
-        return notfound;
-      }
-      r = m - 1;
+//     // If x is larger, ignore right half 
+//     else
+//     {
+//       if (m == 0) {
+//         //printf("\nCACACACA");
+//         return notfound;
+//       }
+//       r = m - 1;
       
-    }     
-  }   
+//     }     
+//   }   
 
-  // if we reach here, then element was 
-  // not present
-  return notfound; 
-} 
+//   // if we reach here, then element was 
+//   // not present
+//   return notfound; 
+// } 
 
-size_t binary_search_pos(FFT_CMPLX *mesh, INDEX *index_arr, long int l, long int r, FFT_REAL x, size_t notfound) {
-  long int m;
-  long int max_index = r;
-  long int min_index = l;
+// size_t binary_search_pos(FFT_CMPLX *mesh, INDEX *index_arr, long int l, long int r, FFT_REAL x, size_t notfound) {
+//   long int m;
+//   long int max_index = r;
+//   long int min_index = l;
   
-  while (l <= r) { 
-    m = l + (r - l) / 2; 
-    // Check if x is present at mid 
-    if (mesh[index_arr[m].val][0] == x) 
-      return m; 
+//   while (l <= r) { 
+//     m = l + (r - l) / 2; 
+//     // Check if x is present at mid 
+//     if (mesh[index_arr[m].val][0] == x) 
+//       return m; 
 
-    // If x smaller, ignore left half 
-    if (mesh[index_arr[m].val][0] > x) {
-      l = m + 1;
-      if(l <= max_index && mesh[index_arr[l].val][0] < x)
-        return m;
+//     // If x smaller, ignore left half 
+//     if (mesh[index_arr[m].val][0] > x) {
+//       l = m + 1;
+//       if(l <= max_index && mesh[index_arr[l].val][0] < x)
+//         return m;
       
-      if(l > max_index)
-        return notfound;
-    }
-    // If x is larger, ignore right half 
-    else
-      r = m - 1;
-      if(r >= min_index && mesh[index_arr[r].val][0] > x)
-        return r;
+//       if(l > max_index)
+//         return notfound;
+//     }
+//     // If x is larger, ignore right half 
+//     else
+//       r = m - 1;
+//       if(r >= min_index && mesh[index_arr[r].val][0] > x)
+//         return r;
       
-      if(r < min_index)
-        return notfound;
-  } 
+//       if(r < min_index)
+//         return notfound;
+//   } 
 
-  // if we reach here, then element was 
-  // not present
-  return notfound; 
-} 
+//   // if we reach here, then element was 
+//   // not present
+//   return notfound; 
+// } 
 
 double return_x(double y) {
   if(y < 0.5) return sqrt(2 * y) - 1;
   else return 1 - sqrt(2 * (1 - y));
 }
 
-static void part_cic(FFT_CMPLX *mesh, INDEX *index_arr, size_t idx_mesh, FFT_REAL delta_mesh, const size_t Nh, long int *max_index) {
-  //printf("\nIN Before sub ;part_cic5: %ld %0.10lf, %0.10lf ", (long int) idx_mesh, mesh[idx_mesh][0], delta_mesh);
+// static void part_cic(FFT_CMPLX *mesh, INDEX *index_arr, size_t idx_mesh, FFT_REAL delta_mesh, const size_t Nh, long int *max_index) {
+//   //printf("\nIN Before sub ;part_cic5: %ld %0.10lf, %0.10lf ", (long int) idx_mesh, mesh[idx_mesh][0], delta_mesh);
   
-  //mesh[idx_mesh][0] = mesh[idx_mesh][0] - delta_mesh;
-  //printf("\nIN After sub; part_cic5: %ld %0.10lf, %0.10lf ", (long int) idx_mesh, mesh[idx_mesh][0], delta_mesh);
+//   //mesh[idx_mesh][0] = mesh[idx_mesh][0] - delta_mesh;
+//   //printf("\nIN After sub; part_cic5: %ld %0.10lf, %0.10lf ", (long int) idx_mesh, mesh[idx_mesh][0], delta_mesh);
   
-  size_t idx_idx;
-  size_t idx_idx_idx;
-  size_t idx_idx1;
-  size_t min_rank;
-  INDEX tmp;
+//   size_t idx_idx;
+//   size_t idx_idx_idx;
+//   size_t idx_idx1;
+//   size_t min_rank;
+//   INDEX tmp;
 
-  // Search in the array of length max_index+1 with the max_index+1 largest elements from the mesh, for the neighbour of the maximum element of the mesh
-  idx_idx_idx = binary_search(index_arr, 0, *max_index, idx_mesh, 8 * Nh);
-  //printf("\n IN part cic 5: %d %d %d", (long int) idx_idx_idx, (long int)  index_arr[idx_idx_idx].index, (long int)  index_arr[index_arr[idx_idx_idx].index].val);
-  min_rank = index_arr[*max_index].rank;
+//   // Search in the array of length max_index+1 with the max_index+1 largest elements from the mesh, for the neighbour of the maximum element of the mesh
+//   idx_idx_idx = binary_search(index_arr, 0, *max_index, idx_mesh, 8 * Nh);
+//   //printf("\n IN part cic 5: %d %d %d", (long int) idx_idx_idx, (long int)  index_arr[idx_idx_idx].index, (long int)  index_arr[index_arr[idx_idx_idx].index].val);
+//   min_rank = index_arr[*max_index].rank;
   
-  // If the neighbour is in this array then.
-  if(idx_idx_idx != 8 * Nh) {
-    idx_idx = index_arr[idx_idx_idx].index;
-    mesh[idx_mesh][0] = mesh[idx_mesh][0] - delta_mesh;
+//   // If the neighbour is in this array then.
+//   if(idx_idx_idx != 8 * Nh) {
+//     idx_idx = index_arr[idx_idx_idx].index;
+//     mesh[idx_mesh][0] = mesh[idx_mesh][0] - delta_mesh;
     
-    if(idx_idx + 1 < *max_index && mesh[index_arr[idx_idx].val][0] < mesh[index_arr[idx_idx+1].val][0]) {
-      // Search the new position of the modified element of the mesh.
-      idx_idx1 = binary_search_pos(mesh, index_arr, (long int) idx_idx + 1, *max_index, mesh[index_arr[idx_idx].val][0], 8 * Nh);
-      if(idx_idx1 != 8 * Nh) {
-        tmp = index_arr[idx_idx];
-        memmove(index_arr + idx_idx, index_arr + idx_idx + 1, (idx_idx1 - idx_idx)*sizeof(INDEX));
-        index_arr[idx_idx1] = tmp;
-        min_rank = index_arr[*max_index].rank;
-      }
-      else {
-        min_rank = index_arr[idx_idx].rank;
-        memmove(index_arr + idx_idx, index_arr + idx_idx + 1, (*max_index - idx_idx)*sizeof(INDEX));
-      }
-    }
-    else if (idx_idx + 1 == *max_index && mesh[index_arr[idx_idx].val][0] < mesh[index_arr[idx_idx+1].val][0]) {
-      min_rank = index_arr[idx_idx].rank;
-      index_arr[idx_idx] = index_arr[idx_idx + 1];
-    }
-  }
-  *max_index = *max_index - 1;
+//     if(idx_idx + 1 < *max_index && mesh[index_arr[idx_idx].val][0] < mesh[index_arr[idx_idx+1].val][0]) {
+//       // Search the new position of the modified element of the mesh.
+//       idx_idx1 = binary_search_pos(mesh, index_arr, (long int) idx_idx + 1, *max_index, mesh[index_arr[idx_idx].val][0], 8 * Nh);
+//       if(idx_idx1 != 8 * Nh) {
+//         tmp = index_arr[idx_idx];
+//         memmove(index_arr + idx_idx, index_arr + idx_idx + 1, (idx_idx1 - idx_idx)*sizeof(INDEX));
+//         index_arr[idx_idx1] = tmp;
+//         min_rank = index_arr[*max_index].rank;
+//       }
+//       else {
+//         min_rank = index_arr[idx_idx].rank;
+//         memmove(index_arr + idx_idx, index_arr + idx_idx + 1, (*max_index - idx_idx)*sizeof(INDEX));
+//       }
+//     }
+//     else if (idx_idx + 1 == *max_index && mesh[index_arr[idx_idx].val][0] < mesh[index_arr[idx_idx+1].val][0]) {
+//       min_rank = index_arr[idx_idx].rank;
+//       index_arr[idx_idx] = index_arr[idx_idx + 1];
+//     }
+//   }
+//   *max_index = *max_index - 1;
 
-#ifdef OMP
-#pragma omp parallel for
-#endif
-  for (size_t i = 0; i <= *max_index; i++) {
-    if(index_arr[i].rank > min_rank) {
-      index_arr[i].rank = index_arr[i].rank - 1;
-    }
-    index_arr[index_arr[i].rank].index = i;
+// #ifdef OMP
+// #pragma omp parallel for
+// #endif
+//   for (size_t i = 0; i <= *max_index; i++) {
+//     if(index_arr[i].rank > min_rank) {
+//       index_arr[i].rank = index_arr[i].rank - 1;
+//     }
+//     index_arr[index_arr[i].rank].index = i;
     
-  }
-}
+//   }
+// }
 
-static void cic(FFT_CMPLX *mesh, INDEX *index_arr, double x, double y, double z, const int Ng, const size_t Nh, const double Lbox, long int *max_index) {
+// static void cic(FFT_CMPLX *mesh, INDEX *index_arr, double x, double y, double z, const int Ng, const size_t Nh, const double Lbox, long int *max_index) {
     
-  FFT_REAL mesh_x = x * Ng / Lbox;
-  FFT_REAL mesh_y = y * Ng / Lbox;
-  FFT_REAL mesh_z = z * Ng / Lbox;
+//   FFT_REAL mesh_x = x * Ng / Lbox;
+//   FFT_REAL mesh_y = y * Ng / Lbox;
+//   FFT_REAL mesh_z = z * Ng / Lbox;
   
-  int x0 = (int) mesh_x;
-  int y0 = (int) mesh_y;
-  int z0 = (int) mesh_z;
+//   int x0 = (int) mesh_x;
+//   int y0 = (int) mesh_y;
+//   int z0 = (int) mesh_z;
   
-  /* Weights for neighbours. */
-  FFT_REAL wx1 = mesh_x - x0;
-  FFT_REAL wx0 = 1 - wx1;
-  FFT_REAL wy1 = mesh_y - y0;
-  FFT_REAL wy0 = 1 - wy1;
-  FFT_REAL wz1 = mesh_z - z0;
-  FFT_REAL wz0 = 1 - wz1;
+//   /* Weights for neighbours. */
+//   FFT_REAL wx1 = mesh_x - x0;
+//   FFT_REAL wx0 = 1 - wx1;
+//   FFT_REAL wy1 = mesh_y - y0;
+//   FFT_REAL wy0 = 1 - wy1;
+//   FFT_REAL wz1 = mesh_z - z0;
+//   FFT_REAL wz0 = 1 - wz1;
 
-  int x1 = (x0 == Ng - 1) ? 0 : x0 + 1;
-  int y1 = (y0 == Ng - 1) ? 0 : y0 + 1;
-  int z1 = (z0 == Ng - 1) ? 0 : z0 + 1;
+//   int x1 = (x0 == Ng - 1) ? 0 : x0 + 1;
+//   int y1 = (y0 == Ng - 1) ? 0 : y0 + 1;
+//   int z1 = (z0 == Ng - 1) ? 0 : z0 + 1;
 
-  // printf("\n%ld %0.10lf ", (long int) MESH_IDX(Ng, x0, y0, z0), mesh[MESH_IDX(Ng, x0, y0, z0)][0]);
-  // printf("\n%ld %0.10lf ", (long int) MESH_IDX(Ng, x0, y0, z1), mesh[MESH_IDX(Ng, x0, y0, z1)][0]);
-  // printf("\n%ld %0.10lf ", (long int) MESH_IDX(Ng, x0, y1, z0), mesh[MESH_IDX(Ng, x0, y1, z0)][0]);
-  // printf("\n%ld %0.10lf ", (long int) MESH_IDX(Ng, x0, y1, z1), mesh[MESH_IDX(Ng, x0, y1, z1)][0]);
-  // printf("\n%ld %0.10lf ", (long int) MESH_IDX(Ng, x1, y0, z0), mesh[MESH_IDX(Ng, x1, y0, z0)][0]);
-  // printf("\n%ld %0.10lf ", (long int) MESH_IDX(Ng, x1, y0, z1), mesh[MESH_IDX(Ng, x1, y0, z1)][0]);
-  // printf("\n%ld %0.10lf ", (long int) MESH_IDX(Ng, x1, y1, z0), mesh[MESH_IDX(Ng, x1, y1, z0)][0]);
-  // printf("\n%ld %0.10lf ", (long int) MESH_IDX(Ng, x1, y1, z1), mesh[MESH_IDX(Ng, x1, y1, z1)][0]);
+//   // printf("\n%ld %0.10lf ", (long int) MESH_IDX(Ng, x0, y0, z0), mesh[MESH_IDX(Ng, x0, y0, z0)][0]);
+//   // printf("\n%ld %0.10lf ", (long int) MESH_IDX(Ng, x0, y0, z1), mesh[MESH_IDX(Ng, x0, y0, z1)][0]);
+//   // printf("\n%ld %0.10lf ", (long int) MESH_IDX(Ng, x0, y1, z0), mesh[MESH_IDX(Ng, x0, y1, z0)][0]);
+//   // printf("\n%ld %0.10lf ", (long int) MESH_IDX(Ng, x0, y1, z1), mesh[MESH_IDX(Ng, x0, y1, z1)][0]);
+//   // printf("\n%ld %0.10lf ", (long int) MESH_IDX(Ng, x1, y0, z0), mesh[MESH_IDX(Ng, x1, y0, z0)][0]);
+//   // printf("\n%ld %0.10lf ", (long int) MESH_IDX(Ng, x1, y0, z1), mesh[MESH_IDX(Ng, x1, y0, z1)][0]);
+//   // printf("\n%ld %0.10lf ", (long int) MESH_IDX(Ng, x1, y1, z0), mesh[MESH_IDX(Ng, x1, y1, z0)][0]);
+//   // printf("\n%ld %0.10lf ", (long int) MESH_IDX(Ng, x1, y1, z1), mesh[MESH_IDX(Ng, x1, y1, z1)][0]);
   
   
-  //printf("\nBefore:part_cic1: %ld %0.10lf ", (long int) MESH_IDX(Ng, 0, 0, 0), mesh[0][0]);
-  //mesh[0][0] = mesh[0][0] - 1;
-  //printf("\nAfter:part_cic1: %ld %0.10lf ", (long int) MESH_IDX(Ng, 0, 0, 0), mesh[0][0]);
+//   //printf("\nBefore:part_cic1: %ld %0.10lf ", (long int) MESH_IDX(Ng, 0, 0, 0), mesh[0][0]);
+//   //mesh[0][0] = mesh[0][0] - 1;
+//   //printf("\nAfter:part_cic1: %ld %0.10lf ", (long int) MESH_IDX(Ng, 0, 0, 0), mesh[0][0]);
   
-  //printf("\nBefore:part_cic1: %ld %0.10lf %0.10lf", (long int) MESH_IDX(Ng, x0, y0, z0), mesh[MESH_IDX(Ng, x0, y0, z0)][0], wx0 * wy0 * wz0 );
-  part_cic(mesh, index_arr, MESH_IDX(Ng, x0, y0, z0), wx0 * wy0 * wz0, Nh, max_index);
-  //printf("\naAfter:part_cic1: %ld %0.10lf %0.10lf", (long int) MESH_IDX(Ng, x0, y0, z0), mesh[MESH_IDX(Ng, x0, y0, z0)][0], wx0 * wy0 * wz0);
+//   //printf("\nBefore:part_cic1: %ld %0.10lf %0.10lf", (long int) MESH_IDX(Ng, x0, y0, z0), mesh[MESH_IDX(Ng, x0, y0, z0)][0], wx0 * wy0 * wz0 );
+//   part_cic(mesh, index_arr, MESH_IDX(Ng, x0, y0, z0), wx0 * wy0 * wz0, Nh, max_index);
+//   //printf("\naAfter:part_cic1: %ld %0.10lf %0.10lf", (long int) MESH_IDX(Ng, x0, y0, z0), mesh[MESH_IDX(Ng, x0, y0, z0)][0], wx0 * wy0 * wz0);
   
-  part_cic(mesh, index_arr, MESH_IDX(Ng, x0, y0, z1), wx0 * wy0 * wz1, Nh, max_index);
-  // //printf("\npart_cic2: %ld %0.10lf ", (long int) MESH_IDX(Ng, x0, y0, z1), mesh[MESH_IDX(Ng, x0, y0, z1)][0]);
+//   part_cic(mesh, index_arr, MESH_IDX(Ng, x0, y0, z1), wx0 * wy0 * wz1, Nh, max_index);
+//   // //printf("\npart_cic2: %ld %0.10lf ", (long int) MESH_IDX(Ng, x0, y0, z1), mesh[MESH_IDX(Ng, x0, y0, z1)][0]);
   
-  part_cic(mesh, index_arr, MESH_IDX(Ng, x0, y1, z0), wx0 * wy1 * wz0, Nh, max_index);
-  // //printf("\npart_cic3: %ld %0.10lf ", (long int) MESH_IDX(Ng, x0, y1, z0), mesh[MESH_IDX(Ng, x0, y1, z0)][0]);
-  //printf("\n\n");
+//   part_cic(mesh, index_arr, MESH_IDX(Ng, x0, y1, z0), wx0 * wy1 * wz0, Nh, max_index);
+//   // //printf("\npart_cic3: %ld %0.10lf ", (long int) MESH_IDX(Ng, x0, y1, z0), mesh[MESH_IDX(Ng, x0, y1, z0)][0]);
+//   //printf("\n\n");
   
-  //for (size_t s = 0; s <= *max_index; s++)
-  //  printf("%ld %ld %ld %0.10lf %ld \n", (long int) s, (long int) index_arr[s].val, (long int) index_arr[s].rank, mesh[index_arr[s].val][0], (long int) (*max_index));
+//   //for (size_t s = 0; s <= *max_index; s++)
+//   //  printf("%ld %ld %ld %0.10lf %ld \n", (long int) s, (long int) index_arr[s].val, (long int) index_arr[s].rank, mesh[index_arr[s].val][0], (long int) (*max_index));
   
-  //printf("\n\n");
-  part_cic(mesh, index_arr, MESH_IDX(Ng, x0, y1, z1), wx0 * wy1 * wz1, Nh, max_index);
-  // //printf("\npart_cic4: %ld %0.10lf ", (long int) MESH_IDX(Ng, x0, y1, z1), mesh[MESH_IDX(Ng, x0, y1, z1)][0]);
+//   //printf("\n\n");
+//   part_cic(mesh, index_arr, MESH_IDX(Ng, x0, y1, z1), wx0 * wy1 * wz1, Nh, max_index);
+//   // //printf("\npart_cic4: %ld %0.10lf ", (long int) MESH_IDX(Ng, x0, y1, z1), mesh[MESH_IDX(Ng, x0, y1, z1)][0]);
   
-  //for (size_t s = 0; s <= *max_index; s++)
-  //  printf("%ld %ld %ld %0.10lf %ld \n", (long int) s, (long int) index_arr[s].val, (long int) index_arr[s].rank, mesh[index_arr[s].val][0], (long int) (*max_index));
+//   //for (size_t s = 0; s <= *max_index; s++)
+//   //  printf("%ld %ld %ld %0.10lf %ld \n", (long int) s, (long int) index_arr[s].val, (long int) index_arr[s].rank, mesh[index_arr[s].val][0], (long int) (*max_index));
   
-  part_cic(mesh, index_arr, MESH_IDX(Ng, x1, y0, z0), wx1 * wy0 * wz0, Nh, max_index);
+//   part_cic(mesh, index_arr, MESH_IDX(Ng, x1, y0, z0), wx1 * wy0 * wz0, Nh, max_index);
   
-  //printf("\n\n");
-  //for (size_t s = 0; s <= *max_index; s++)
-  //  printf("%ld %ld %ld %0.10lf %ld \n", (long int) s, (long int) index_arr[s].val, (long int) index_arr[s].rank, mesh[index_arr[s].val][0], (long int) (*max_index));
+//   //printf("\n\n");
+//   //for (size_t s = 0; s <= *max_index; s++)
+//   //  printf("%ld %ld %ld %0.10lf %ld \n", (long int) s, (long int) index_arr[s].val, (long int) index_arr[s].rank, mesh[index_arr[s].val][0], (long int) (*max_index));
   
-  //printf("\npart_cic5: %ld %0.10lf, %0.10lf ", (long int) MESH_IDX(Ng, x1, y0, z0), mesh[MESH_IDX(Ng, x1, y0, z0)][0], wx1 * wy0 * wz0);
+//   //printf("\npart_cic5: %ld %0.10lf, %0.10lf ", (long int) MESH_IDX(Ng, x1, y0, z0), mesh[MESH_IDX(Ng, x1, y0, z0)][0], wx1 * wy0 * wz0);
   
-  part_cic(mesh, index_arr, MESH_IDX(Ng, x1, y0, z1), wx1 * wy0 * wz1, Nh, max_index);
-  //printf("\npart_cic6: %ld %0.10lf, %0.10lf ", (long int) MESH_IDX(Ng, x1, y0, z1), mesh[MESH_IDX(Ng, x1, y0, z1)][0], wx1 * wy0 * wz1);
+//   part_cic(mesh, index_arr, MESH_IDX(Ng, x1, y0, z1), wx1 * wy0 * wz1, Nh, max_index);
+//   //printf("\npart_cic6: %ld %0.10lf, %0.10lf ", (long int) MESH_IDX(Ng, x1, y0, z1), mesh[MESH_IDX(Ng, x1, y0, z1)][0], wx1 * wy0 * wz1);
   
-  part_cic(mesh, index_arr, MESH_IDX(Ng, x1, y1, z0), wx1 * wy1 * wz0, Nh, max_index);
-  // //printf("\npart_cic7: %ld %0.10lf ", (long int) MESH_IDX(Ng, x1, y1, z0), mesh[MESH_IDX(Ng, x1, y1, z0)][0]);
+//   part_cic(mesh, index_arr, MESH_IDX(Ng, x1, y1, z0), wx1 * wy1 * wz0, Nh, max_index);
+//   // //printf("\npart_cic7: %ld %0.10lf ", (long int) MESH_IDX(Ng, x1, y1, z0), mesh[MESH_IDX(Ng, x1, y1, z0)][0]);
   
-  part_cic(mesh, index_arr, MESH_IDX(Ng, x1, y1, z1), wx1 * wy1 * wz1, Nh, max_index);
-  // //printf("\npart_cic8: %ld %0.10lf ", (long int) MESH_IDX(Ng, x1, y1, z1), mesh[MESH_IDX(Ng, x1, y1, z1)][0]);
+//   part_cic(mesh, index_arr, MESH_IDX(Ng, x1, y1, z1), wx1 * wy1 * wz1, Nh, max_index);
+//   // //printf("\npart_cic8: %ld %0.10lf ", (long int) MESH_IDX(Ng, x1, y1, z1), mesh[MESH_IDX(Ng, x1, y1, z1)][0]);
   
-}
+// }
 
-void select_dens(FFT_CMPLX *mesh, HALOS *halos, INDEX *index_arr, const int Ng, const size_t Nh, const double Lbox) {
+void select_dens(FFT_CMPLX *mesh, HALOS *halos, size_t *index_arr, const int Ng, const size_t Nh, const double Lbox) {
   size_t i, j, k, idx_max, Ntot, idx_val;
   long int max_index;
   double x, y, z;
-  INDEX tmp;
+  size_t tmp;
 
   Ntot = (size_t) Ng * Ng * Ng;
 
@@ -428,23 +360,18 @@ void select_dens(FFT_CMPLX *mesh, HALOS *halos, INDEX *index_arr, const int Ng, 
 #ifdef OMP
 #pragma omp parallel for
 #endif
-  for (i = 0; i < 8 * Nh; i++) {
-    index_arr[i].val = i;
-    index_arr[i].rank = 8 * Nh - 1 - i;
-    index_arr[i].index = 0;
-  }
+  for (i = 0; i < 8 * Nh; i++) index_arr[i] = i;
 
-  
   qsort_dens_asc(mesh, index_arr, 8 * Nh, 0);
     
   for (i = 8 * Nh; i < Ntot; i++) {
-    if (mesh[i][0] > mesh[index_arr[0].val][0]) {
-      index_arr[0].val = i;
+    if (mesh[i][0] > mesh[index_arr[0]][0]) {
+      index_arr[0] = i;
       for (j = 0;;) {
         k = (j << 1) + 1;
         if (k > 8 * Nh - 1) break;
-        if (k != 8 * Nh - 1 && mesh[index_arr[k].val][0] > mesh[index_arr[k + 1].val][0]) ++k;
-        if (mesh[index_arr[j].val][0] <= mesh[index_arr[k].val][0]) break;
+        if (k != 8 * Nh - 1 && mesh[index_arr[k]][0] > mesh[index_arr[k + 1]][0]) ++k;
+        if (mesh[index_arr[j]][0] <= mesh[index_arr[k]][0]) break;
         SWAP(index_arr[k], index_arr[j], tmp);
         j = k;
       }
@@ -452,25 +379,14 @@ void select_dens(FFT_CMPLX *mesh, HALOS *halos, INDEX *index_arr, const int Ng, 
   }
   qsort_dens_desc(mesh, index_arr, 8 * Nh, 0);
 
-#ifdef OMP
-#pragma omp parallel for
-#endif
-  for (i = 0; i < 8 * Nh; i++) index_arr[i].index = i;
-
-  qsort_idx_desc(index_arr, 8 * Nh);
-
-#ifdef OMP
-#pragma omp parallel for
-#endif
-  for (i = 0; i < 8 * Nh; i++) index_arr[index_arr[i].index].rank = i;
 
 
   // for(i = 0; i < 8 * Nh; i++)
   // {
-  //   printf("\n%d %lf %lf %lf %lf", (int)i, (double)index_arr[i].val, (double)index_arr[index_arr[i].index].val, (double) index_arr[i].rank, mesh[index_arr[i].val][0]);//, (double)index_arr[8*Nh-100 + i].index, (double)index_arr[index_arr[8*Nh-100 + i].index].val );
+  //   printf("\n%d %lf %lf %lf %lf", (int)i, (double)index_arr[i], (double)index_arr[index_arr[i].index], (double) index_arr[i].rank, mesh[index_arr[i]][0]);//, (double)index_arr[8*Nh-100 + i].index, (double)index_arr[index_arr[8*Nh-100 + i].index] );
   // }
-  printf("\nThe maximum density is %f ", mesh[index_arr[0].val][0]);
-  printf("\nThe minimum density is %f ", mesh[index_arr[8*Nh - 1].val][0]);
+  printf("\nThe maximum density is %f ", mesh[index_arr[0]][0]);
+  printf("\nThe minimum density is %f ", mesh[index_arr[8*Nh - 1]][0]);
   fflush(stdout);
   //printf("\nPozitie: %lf %lf", (double)binary_search(index_arr, 0, 8 * Nh - 1, MESH_IDX(Ng, 2, 2, 1), 8 * Nh), (double) MESH_IDX(Ng, 2, 2, 1));
   //FILE *ofile;
@@ -479,11 +395,11 @@ void select_dens(FFT_CMPLX *mesh, HALOS *halos, INDEX *index_arr, const int Ng, 
   max_index = 8 * Nh - 1;
   for (size_t u = 0; u < Nh; u++) {
     idx_max = 0;
-    idx_val = index_arr[idx_max].val;
+    idx_val = index_arr[idx_max];
     
     //fprintf(ofile, "######\n");
     //for (size_t s = 0; s < max_index; i++)
-    //  fprintf(ofile, "%ld %ld %0.10lf %ld \n", (long int) s, (long int) index_arr[s].val, mesh[index_arr[s].val][0], (long int) (max_index));
+    //  fprintf(ofile, "%ld %ld %0.10lf %ld \n", (long int) s, (long int) index_arr[s], mesh[index_arr[s]][0], (long int) (max_index));
     //fprintf(ofile, "\n");
     if(u%1000==0)
       printf("\n%ld %ld", (long int)u, (long int) max_index);
@@ -504,9 +420,9 @@ void select_dens(FFT_CMPLX *mesh, HALOS *halos, INDEX *index_arr, const int Ng, 
     halos[u].x[0] = (halos[u].x[0] < 0) ? (Lbox + halos[u].x[0]) : halos[u].x[0];
     halos[u].x[1] = (halos[u].x[1] < 0) ? (Lbox + halos[u].x[1]) : halos[u].x[1];
     halos[u].x[2] = (halos[u].x[2] < 0) ? (Lbox + halos[u].x[2]) : halos[u].x[2];
-    //printf("\n\n %d Before cic: %ld %0.10lf ", (int) u, (long int) index_arr[idx_max].val, mesh[idx_val][0]);
-    cic(mesh, index_arr, halos[u].x[0], halos[u].x[1], halos[u].x[2], Ng, Nh, Lbox, &max_index);
-    //printf("\nAfter cic: %ld %0.10lf ", (long int) index_arr[idx_max].val, mesh[idx_val][0]);
+    //printf("\n\n %d Before cic: %ld %0.10lf ", (int) u, (long int) index_arr[idx_max], mesh[idx_val][0]);
+    //cic(mesh, index_arr, halos[u].x[0], halos[u].x[1], halos[u].x[2], Ng, Nh, Lbox, &max_index);
+    //printf("\nAfter cic: %ld %0.10lf ", (long int) index_arr[idx_max], mesh[idx_val][0]);
     //max_index = max_index - 8;
   }
   //fclose(ofile);

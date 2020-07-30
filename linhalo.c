@@ -7,7 +7,7 @@ int main(int argc, char *argv[]) {
   int ecode;
   double *k, *P;
   size_t Nk;
-  INDEX *index_arr;
+  size_t *index_arr;
   HALOS *halos;
   CONF conf;
 
