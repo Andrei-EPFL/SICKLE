@@ -476,40 +476,40 @@ void select_dens(FFT_CMPLX *mesh, HALOS *halos, INDEX *index_arr, const int Ng, 
   //FILE *ofile;
   //ofile = fopen("./output/test.txt", "w+");
 
-  max_index = 8 * Nh - 1;
-  for (size_t u = 0; u < Nh; u++) {
-    idx_max = 0;
-    idx_val = index_arr[idx_max].val;
+  // max_index = 8 * Nh - 1;
+  // for (size_t u = 0; u < Nh; u++) {
+  //   idx_max = 0;
+  //   idx_val = index_arr[idx_max].val;
     
-    //fprintf(ofile, "######\n");
-    //for (size_t s = 0; s < max_index; i++)
-    //  fprintf(ofile, "%ld %ld %0.10lf %ld \n", (long int) s, (long int) index_arr[s].val, mesh[index_arr[s].val][0], (long int) (max_index));
-    //fprintf(ofile, "\n");
-    if(u%1000==0)
-      printf("\n%ld %ld", (long int)u, (long int) max_index);
-    k = idx_val/(size_t)(Ng * Ng);
-    j = (idx_val - (size_t)k * Ng * Ng) / (size_t)Ng;
-    i = idx_val - (size_t)k * Ng * Ng - (size_t)j * Ng;
+  //   //fprintf(ofile, "######\n");
+  //   //for (size_t s = 0; s < max_index; i++)
+  //   //  fprintf(ofile, "%ld %ld %0.10lf %ld \n", (long int) s, (long int) index_arr[s].val, mesh[index_arr[s].val][0], (long int) (max_index));
+  //   //fprintf(ofile, "\n");
+  //   if(u%1000==0)
+  //     printf("\n%ld %ld", (long int)u, (long int) max_index);
+  //   k = idx_val/(size_t)(Ng * Ng);
+  //   j = (idx_val - (size_t)k * Ng * Ng) / (size_t)Ng;
+  //   i = idx_val - (size_t)k * Ng * Ng - (size_t)j * Ng;
     
-    // printf("\nidx_val=%d i=%d j=%d k=%d mesh_idx=%d", idx_val, i ,j ,k, MESH_IDX(Ng, i,j , k));
-    x = gsl_ran_flat(r, 0, 1);
-    y = gsl_ran_flat(r, 0, 1);
-    z = gsl_ran_flat(r, 0, 1);
+  //   // printf("\nidx_val=%d i=%d j=%d k=%d mesh_idx=%d", idx_val, i ,j ,k, MESH_IDX(Ng, i,j , k));
+  //   x = gsl_ran_flat(r, 0, 1);
+  //   y = gsl_ran_flat(r, 0, 1);
+  //   z = gsl_ran_flat(r, 0, 1);
     
-    halos[u].x[0] = Lbox * (i + return_x(x)) / Ng;
-    halos[u].x[1] = Lbox * (j + return_x(y)) / Ng;
-    halos[u].x[2] = Lbox * (k + return_x(z)) / Ng;
-    halos[u].dens = idx_val;
+  //   halos[u].x[0] = Lbox * (i + return_x(x)) / Ng;
+  //   halos[u].x[1] = Lbox * (j + return_x(y)) / Ng;
+  //   halos[u].x[2] = Lbox * (k + return_x(z)) / Ng;
+  //   halos[u].dens = idx_val;
     
-    halos[u].x[0] = (halos[u].x[0] < 0) ? (Lbox + halos[u].x[0]) : halos[u].x[0];
-    halos[u].x[1] = (halos[u].x[1] < 0) ? (Lbox + halos[u].x[1]) : halos[u].x[1];
-    halos[u].x[2] = (halos[u].x[2] < 0) ? (Lbox + halos[u].x[2]) : halos[u].x[2];
-    //printf("\n\n %d Before cic: %ld %0.10lf ", (int) u, (long int) index_arr[idx_max].val, mesh[idx_val][0]);
-    cic(mesh, index_arr, halos[u].x[0], halos[u].x[1], halos[u].x[2], Ng, Nh, Lbox, &max_index);
-    //printf("\nAfter cic: %ld %0.10lf ", (long int) index_arr[idx_max].val, mesh[idx_val][0]);
-    //max_index = max_index - 8;
-  }
-  //fclose(ofile);
+  //   halos[u].x[0] = (halos[u].x[0] < 0) ? (Lbox + halos[u].x[0]) : halos[u].x[0];
+  //   halos[u].x[1] = (halos[u].x[1] < 0) ? (Lbox + halos[u].x[1]) : halos[u].x[1];
+  //   halos[u].x[2] = (halos[u].x[2] < 0) ? (Lbox + halos[u].x[2]) : halos[u].x[2];
+  //   //printf("\n\n %d Before cic: %ld %0.10lf ", (int) u, (long int) index_arr[idx_max].val, mesh[idx_val][0]);
+  //   cic(mesh, index_arr, halos[u].x[0], halos[u].x[1], halos[u].x[2], Ng, Nh, Lbox, &max_index);
+  //   //printf("\nAfter cic: %ld %0.10lf ", (long int) index_arr[idx_max].val, mesh[idx_val][0]);
+  //   //max_index = max_index - 8;
+  // }
+  // //fclose(ofile);
   gsl_rng_free(r);
   
 }
