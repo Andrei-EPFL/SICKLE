@@ -227,38 +227,39 @@ static void part_cic(FFT_CMPLX *mesh, size_t *index_arr, size_t idx_mesh, FFT_RE
   //mesh[idx_mesh][0] = mesh[idx_mesh][0] - delta_mesh;
   //printf("\nIN After sub; part_cic5: %ld %0.10lf, %0.10lf ", (long int) idx_mesh, mesh[idx_mesh][0], delta_mesh);
   
-  size_t idx_idx;
+  size_t idx_new_pos;
   size_t idx_idx_idx;
   size_t tmp;
-
+  // idx_mesh = 263;
   // Search in the array of length max_index+1 with the max_index+1 largest elements from the mesh, for the neighbour of the maximum element of the mesh
   idx_idx_idx = binary_search(mesh, index_arr, 0, *max_index, mesh[idx_mesh][0], 8 * Nh);
-  printf("\n IN part cic 5: %d %d %lf %lf", (long int) idx_idx_idx, (long int)  index_arr[idx_idx_idx], (double)  mesh[index_arr[idx_idx_idx]][0], mesh[idx_mesh][0]);
+  // printf("\n IN part cic 5: %d %d %lf %lf", (long int) idx_idx_idx, (long int)  index_arr[idx_idx_idx], (double)  mesh[index_arr[idx_idx_idx]][0], mesh[idx_mesh][0]);
   
 //   // If the neighbour is in this array then.
   if(idx_idx_idx != 8 * Nh) {
     mesh[idx_mesh][0] = mesh[idx_mesh][0] - delta_mesh;
-    printf("\n IN part cic 5: %d %d %lf %lf", (long int) idx_idx_idx, (long int)  index_arr[idx_idx_idx], (double)  mesh[index_arr[idx_idx_idx]][0], mesh[idx_mesh][0]);
+    // printf("\n IN part cic 5: %d %d %lf %lf", (long int) idx_idx_idx, (long int)  index_arr[idx_idx_idx], (double)  mesh[index_arr[idx_idx_idx]][0], mesh[idx_mesh][0]);
       
-    if(idx_idx_idx + 1 < *max_index && mesh[index_arr[idx_idx_idx]][0] < mesh[index_arr[idx_idx_idx + 1]][0]) {
+    if(mesh[index_arr[idx_idx_idx]][0] < mesh[index_arr[idx_idx_idx + 1]][0]) {
       // Search the new position of the modified element of the mesh.
-      idx_idx = binary_search_pos(mesh, index_arr, idx_idx_idx + 1, *max_index, mesh[index_arr[idx_idx_idx]][0], 8 * Nh);
-      if(idx_idx != 8 * Nh) {
-        printf("\n 2nd binary part cic 5: %d %d %lf %lf", (long int) idx_idx, (long int)  index_arr[idx_idx], (double)  mesh[index_arr[idx_idx]][0], mesh[idx_mesh][0]);
-        tmp = index_arr[idx_idx];
-        memmove(index_arr + idx_idx, index_arr + idx_idx + 1, (idx_idx - idx_idx)*sizeof(size_t));
-        index_arr[idx_idx] = tmp;
+      idx_new_pos = binary_search_pos(mesh, index_arr, idx_idx_idx + 1, *max_index, mesh[index_arr[idx_idx_idx]][0], 8 * Nh);
+      if(idx_new_pos != 8 * Nh) {
+        // printf("\n 2nd binary part cic 5: %d %d %lf %lf", (long int) idx_new_pos, (long int)  index_arr[idx_new_pos], (double)  mesh[index_arr[idx_new_pos]][0], mesh[idx_mesh][0]);
+        tmp = index_arr[idx_idx_idx];
+        memmove(index_arr + idx_idx_idx, index_arr + idx_idx_idx + 1, (idx_new_pos - idx_idx_idx)*sizeof(size_t));
+        index_arr[idx_new_pos] = tmp;
       }
       else {
-        memmove(index_arr + idx_idx, index_arr + idx_idx + 1, (*max_index - idx_idx)*sizeof(size_t));
+        // printf("\n 3nd binary part cic 5: %d %d %lf %lf", (long int) idx_new_pos, (long int)  index_arr[idx_new_pos], (double)  mesh[index_arr[idx_new_pos]][0], mesh[idx_mesh][0]);
+        memmove(index_arr + idx_idx_idx, index_arr + idx_idx_idx + 1, (*max_index - idx_idx_idx)*sizeof(size_t));
       }
-    }
-    else if (idx_idx + 1 == *max_index && mesh[index_arr[idx_idx].val][0] < mesh[index_arr[idx_idx+1].val][0]) {
-      min_rank = index_arr[idx_idx].rank;
-      index_arr[idx_idx] = index_arr[idx_idx + 1];
     }
   }
   *max_index = *max_index - 1;
+  // for(size_t i = 0; i <= *max_index; i++)
+  // {
+  //   printf("\n%d %lf %lf", (int)i, (double)index_arr[i], (double)mesh[index_arr[i]][0]);//, (double)index_arr[8*Nh-100 + i].index, (double)index_arr[index_arr[8*Nh-100 + i].index] );
+  // }
 
 }
 
@@ -299,13 +300,13 @@ static void cic(FFT_CMPLX *mesh, size_t *index_arr, double x, double y, double z
   //printf("\nAfter:part_cic1: %ld %0.10lf ", (long int) MESH_IDX(Ng, 0, 0, 0), mesh[0][0]);
   
   //printf("\nBefore:part_cic1: %ld %0.10lf %0.10lf", (long int) MESH_IDX(Ng, x0, y0, z0), mesh[MESH_IDX(Ng, x0, y0, z0)][0], wx0 * wy0 * wz0 );
-  //part_cic(mesh, index_arr, MESH_IDX(Ng, x0, y0, z0), wx0 * wy0 * wz0, Nh, max_index);
+  part_cic(mesh, index_arr, MESH_IDX(Ng, x0, y0, z0), wx0 * wy0 * wz0, Nh, max_index);
   //printf("\naAfter:part_cic1: %ld %0.10lf %0.10lf", (long int) MESH_IDX(Ng, x0, y0, z0), mesh[MESH_IDX(Ng, x0, y0, z0)][0], wx0 * wy0 * wz0);
   
-  //part_cic(mesh, index_arr, MESH_IDX(Ng, x0, y0, z1), wx0 * wy0 * wz1, Nh, max_index);
+  part_cic(mesh, index_arr, MESH_IDX(Ng, x0, y0, z1), wx0 * wy0 * wz1, Nh, max_index);
   // //printf("\npart_cic2: %ld %0.10lf ", (long int) MESH_IDX(Ng, x0, y0, z1), mesh[MESH_IDX(Ng, x0, y0, z1)][0]);
   
-  //part_cic(mesh, index_arr, MESH_IDX(Ng, x0, y1, z0), wx0 * wy1 * wz0, Nh, max_index);
+  part_cic(mesh, index_arr, MESH_IDX(Ng, x0, y1, z0), wx0 * wy1 * wz0, Nh, max_index);
   // //printf("\npart_cic3: %ld %0.10lf ", (long int) MESH_IDX(Ng, x0, y1, z0), mesh[MESH_IDX(Ng, x0, y1, z0)][0]);
   //printf("\n\n");
   
@@ -313,7 +314,7 @@ static void cic(FFT_CMPLX *mesh, size_t *index_arr, double x, double y, double z
   //  printf("%ld %ld %ld %0.10lf %ld \n", (long int) s, (long int) index_arr[s].val, (long int) index_arr[s].rank, mesh[index_arr[s].val][0], (long int) (*max_index));
   
   //printf("\n\n");
-  //part_cic(mesh, index_arr, MESH_IDX(Ng, x0, y1, z1), wx0 * wy1 * wz1, Nh, max_index);
+  part_cic(mesh, index_arr, MESH_IDX(Ng, x0, y1, z1), wx0 * wy1 * wz1, Nh, max_index);
   // //printf("\npart_cic4: %ld %0.10lf ", (long int) MESH_IDX(Ng, x0, y1, z1), mesh[MESH_IDX(Ng, x0, y1, z1)][0]);
   
   //for (size_t s = 0; s <= *max_index; s++)
@@ -327,13 +328,13 @@ static void cic(FFT_CMPLX *mesh, size_t *index_arr, double x, double y, double z
   
   //printf("\npart_cic5: %ld %0.10lf, %0.10lf ", (long int) MESH_IDX(Ng, x1, y0, z0), mesh[MESH_IDX(Ng, x1, y0, z0)][0], wx1 * wy0 * wz0);
   
-  //part_cic(mesh, index_arr, MESH_IDX(Ng, x1, y0, z1), wx1 * wy0 * wz1, Nh, max_index);
+  part_cic(mesh, index_arr, MESH_IDX(Ng, x1, y0, z1), wx1 * wy0 * wz1, Nh, max_index);
   //printf("\npart_cic6: %ld %0.10lf, %0.10lf ", (long int) MESH_IDX(Ng, x1, y0, z1), mesh[MESH_IDX(Ng, x1, y0, z1)][0], wx1 * wy0 * wz1);
   
-  //part_cic(mesh, index_arr, MESH_IDX(Ng, x1, y1, z0), wx1 * wy1 * wz0, Nh, max_index);
+  part_cic(mesh, index_arr, MESH_IDX(Ng, x1, y1, z0), wx1 * wy1 * wz0, Nh, max_index);
   // //printf("\npart_cic7: %ld %0.10lf ", (long int) MESH_IDX(Ng, x1, y1, z0), mesh[MESH_IDX(Ng, x1, y1, z0)][0]);
   
-  //part_cic(mesh, index_arr, MESH_IDX(Ng, x1, y1, z1), wx1 * wy1 * wz1, Nh, max_index);
+  part_cic(mesh, index_arr, MESH_IDX(Ng, x1, y1, z1), wx1 * wy1 * wz1, Nh, max_index);
   // //printf("\npart_cic8: %ld %0.10lf ", (long int) MESH_IDX(Ng, x1, y1, z1), mesh[MESH_IDX(Ng, x1, y1, z1)][0]);
   
 }
@@ -386,7 +387,7 @@ void select_dens(FFT_CMPLX *mesh, HALOS *halos, size_t *index_arr, const int Ng,
   //ofile = fopen("./output/test.txt", "w+");
 
   max_index = 8 * Nh - 1;
-  for (size_t u = 0; u < 1; u++) {
+  for (size_t u = 0; u < Nh; u++) {
     idx_max = 0;
     idx_val = index_arr[idx_max];
     
