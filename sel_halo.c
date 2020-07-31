@@ -375,10 +375,10 @@ void select_dens(FFT_CMPLX *mesh, HALOS *halos, size_t *index_arr, const int Ng,
 
 
 
-  for(i = 0; i < 8 * Nh; i++)
-  {
-    printf("\n%d %lf %lf", (int)i, (double)index_arr[i], (double)mesh[index_arr[i]][0]);//, (double)index_arr[8*Nh-100 + i].index, (double)index_arr[index_arr[8*Nh-100 + i].index] );
-  }
+  // for(i = 0; i < 8 * Nh; i++)
+  // {
+  //   printf("\n%d %lf %lf", (int)i, (double)index_arr[i], (double)mesh[index_arr[i]][0]);//, (double)index_arr[8*Nh-100 + i].index, (double)index_arr[index_arr[8*Nh-100 + i].index] );
+  // }
   printf("\nThe maximum density is %f ", mesh[index_arr[0]][0]);
   printf("\nThe minimum density is %f ", mesh[index_arr[8*Nh - 1]][0]);
   fflush(stdout);
@@ -395,8 +395,8 @@ void select_dens(FFT_CMPLX *mesh, HALOS *halos, size_t *index_arr, const int Ng,
     //for (size_t s = 0; s < max_index; i++)
     //  fprintf(ofile, "%ld %ld %0.10lf %ld \n", (long int) s, (long int) index_arr[s], mesh[index_arr[s]][0], (long int) (max_index));
     //fprintf(ofile, "\n");
-    if(u%1000==0)
-      printf("\n%ld %ld", (long int)u, (long int) max_index);
+    if(u%100000==0)
+      printf("\n%ld/%ld %ld", (long int)u, (long int)Nh, (long int) max_index);
     k = idx_val/(size_t)(Ng * Ng);
     j = (idx_val - (size_t)k * Ng * Ng) / (size_t)Ng;
     i = idx_val - (size_t)k * Ng * Ng - (size_t)j * Ng;
