@@ -50,9 +50,9 @@ void select_dens(FFT_CMPLX *, HALOS *, size_t *, const int, const size_t, const 
 
 int save_dens(const char *, FFT_CMPLX *, const int);
 
-size_t binary_search(size_t *, size_t, size_t, size_t, size_t);
+size_t binary_search(FFT_CMPLX *, size_t *, size_t, size_t, FFT_REAL, size_t);
 
-size_t binary_search_pos(FFT_CMPLX *, size_t *, long int, long int, FFT_REAL, size_t);
+size_t binary_search_pos(FFT_CMPLX *, size_t *, size_t, size_t, FFT_REAL, size_t);
 
 size_t cnt_strcpy(char *, const char *, const size_t);
 
