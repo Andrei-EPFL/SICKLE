@@ -1,0 +1,147 @@
+Loading configurations ... 
+  Configuration file: ./linhalo.conf
+  [36;1mPK_INPUT[0m = /home/epfl/variu/phd/voids/chengscodes/linhalo_fix_ampl_CIC/input/EisensteinHu_Pnw.txt
+  [36;1mNGRID[0m = 512
+  [36;1mBOXSIZE[0m = 2500
+  [36;1mSEED[0m = 1001000
+  [36;1mNHALO[0m = 1000000
+  [36;1mOUTPUT[0m = /home/epfl/variu/phd/voids/chengscodes/linhalo_fix_ampl_CIC/output/halos_G512CIC_BS2500_S1001000_6214031.dat
+  [36;1mSAVE_DENS[0m = 0
+  [36;1mFORCE[0m = 0
+[70C[[32;1mDONE[0m]
+Processing the linear power spectrum ... 
+  Filename: /home/epfl/variu/phd/voids/chengscodes/linhalo_fix_ampl_CIC/input/EisensteinHu_Pnw.txt
+  Counting lines ...  Number of records: 7860.
+  Reading ...   7860 valid lines recorded.
+  Power spectrum interpolated.
+[70C[[32;1mDONE[0m]
+  Initialising halos... 
+[70C[[32;1mDONE[0m]
+  Initialising array of indices for the 8000000 largest density values ... 
+[70C[[32;1mDONE[0m]
+Generating the density field...   Initialising the density field mesh... 
+  The density field is initialised.
+1. Up to this point 0.000000 seconds passed.
+ The counter is set to zero again.
+  Generating Fourier modes ... 
+  Density field in Fourier space is generated.
+  Executing FFT ... 
+  FFT finished successfully.
+[70C[[32;1mDONE[0m]
+2. Up to this point 8.000000 seconds passed.
+ The counter is set to zero again.
+Populating the mesh with haloes...  Take the indices of 8Nhalo values from the mesh ... 
+ IndexSort the 8Nhalo values from the mesh in ascending order ... 
+ Obtain the indices of the 8Nhalo largest values from the mesh ... 
+ IndexSort the 8Nhalo LARGEST values from the mesh in descending order... 
+
+The maximum density in the mesh is 11.074898 
+The minimum density in the array of 8Nhalo largest values is 2.640223 
+ Inverse CIC and populate the mesh with halos ... 
+ Start the time counter
+ Progress... Halo: 0/1000000 after 0.000000 seconds
+ Progress... Halo: 10000/1000000 after 13.000000 seconds
+ Progress... Halo: 20000/1000000 after 28.000000 seconds
+ Progress... Halo: 30000/1000000 after 44.000000 seconds
+ Progress... Halo: 40000/1000000 after 57.000000 seconds
+ Progress... Halo: 50000/1000000 after 69.000000 seconds
+ Progress... Halo: 60000/1000000 after 80.000000 seconds
+ Progress... Halo: 70000/1000000 after 90.000000 seconds
+ Progress... Halo: 80000/1000000 after 100.000000 seconds
+ Progress... Halo: 90000/1000000 after 110.000000 seconds
+ Progress... Halo: 100000/1000000 after 119.000000 seconds
+ Progress... Halo: 110000/1000000 after 129.000000 seconds
+ Progress... Halo: 120000/1000000 after 138.000000 seconds
+ Progress... Halo: 130000/1000000 after 147.000000 seconds
+ Progress... Halo: 140000/1000000 after 155.000000 seconds
+ Progress... Halo: 150000/1000000 after 164.000000 seconds
+ Progress... Halo: 160000/1000000 after 172.000000 seconds
+ Progress... Halo: 170000/1000000 after 180.000000 seconds
+ Progress... Halo: 180000/1000000 after 188.000000 seconds
+ Progress... Halo: 190000/1000000 after 196.000000 seconds
+ Progress... Halo: 200000/1000000 after 203.000000 seconds
+ Progress... Halo: 210000/1000000 after 211.000000 seconds
+ Progress... Halo: 220000/1000000 after 218.000000 seconds
+ Progress... Halo: 230000/1000000 after 225.000000 seconds
+ Progress... Halo: 240000/1000000 after 232.000000 seconds
+ Progress... Halo: 250000/1000000 after 239.000000 seconds
+ Progress... Halo: 260000/1000000 after 245.000000 seconds
+ Progress... Halo: 270000/1000000 after 252.000000 seconds
+ Progress... Halo: 280000/1000000 after 258.000000 seconds
+ Progress... Halo: 290000/1000000 after 264.000000 seconds
+ Progress... Halo: 300000/1000000 after 270.000000 seconds
+ Progress... Halo: 310000/1000000 after 276.000000 seconds
+ Progress... Halo: 320000/1000000 after 282.000000 seconds
+ Progress... Halo: 330000/1000000 after 287.000000 seconds
+ Progress... Halo: 340000/1000000 after 292.000000 seconds
+ Progress... Halo: 350000/1000000 after 298.000000 seconds
+ Progress... Halo: 360000/1000000 after 303.000000 seconds
+ Progress... Halo: 370000/1000000 after 308.000000 seconds
+ Progress... Halo: 380000/1000000 after 312.000000 seconds
+ Progress... Halo: 390000/1000000 after 317.000000 seconds
+ Progress... Halo: 400000/1000000 after 321.000000 seconds
+ Progress... Halo: 410000/1000000 after 326.000000 seconds
+ Progress... Halo: 420000/1000000 after 330.000000 seconds
+ Progress... Halo: 430000/1000000 after 334.000000 seconds
+ Progress... Halo: 440000/1000000 after 338.000000 seconds
+ Progress... Halo: 450000/1000000 after 342.000000 seconds
+ Progress... Halo: 460000/1000000 after 345.000000 seconds
+ Progress... Halo: 470000/1000000 after 349.000000 seconds
+ Progress... Halo: 480000/1000000 after 353.000000 seconds
+ Progress... Halo: 490000/1000000 after 356.000000 seconds
+ Progress... Halo: 500000/1000000 after 359.000000 seconds
+ Progress... Halo: 510000/1000000 after 362.000000 seconds
+ Progress... Halo: 520000/1000000 after 366.000000 seconds
+ Progress... Halo: 530000/1000000 after 368.000000 seconds
+ Progress... Halo: 540000/1000000 after 371.000000 seconds
+ Progress... Halo: 550000/1000000 after 374.000000 seconds
+ Progress... Halo: 560000/1000000 after 376.000000 seconds
+ Progress... Halo: 570000/1000000 after 379.000000 seconds
+ Progress... Halo: 580000/1000000 after 381.000000 seconds
+ Progress... Halo: 590000/1000000 after 384.000000 seconds
+ Progress... Halo: 600000/1000000 after 386.000000 seconds
+ Progress... Halo: 610000/1000000 after 388.000000 seconds
+ Progress... Halo: 620000/1000000 after 390.000000 seconds
+ Progress... Halo: 630000/1000000 after 392.000000 seconds
+ Progress... Halo: 640000/1000000 after 394.000000 seconds
+ Progress... Halo: 650000/1000000 after 396.000000 seconds
+ Progress... Halo: 660000/1000000 after 397.000000 seconds
+ Progress... Halo: 670000/1000000 after 399.000000 seconds
+ Progress... Halo: 680000/1000000 after 401.000000 seconds
+ Progress... Halo: 690000/1000000 after 402.000000 seconds
+ Progress... Halo: 700000/1000000 after 404.000000 seconds
+ Progress... Halo: 710000/1000000 after 406.000000 seconds
+ Progress... Halo: 720000/1000000 after 407.000000 seconds
+ Progress... Halo: 730000/1000000 after 409.000000 seconds
+ Progress... Halo: 740000/1000000 after 410.000000 seconds
+ Progress... Halo: 750000/1000000 after 412.000000 seconds
+ Progress... Halo: 760000/1000000 after 414.000000 seconds
+ Progress... Halo: 770000/1000000 after 415.000000 seconds
+ Progress... Halo: 780000/1000000 after 417.000000 seconds
+ Progress... Halo: 790000/1000000 after 419.000000 seconds
+ Progress... Halo: 800000/1000000 after 420.000000 seconds
+ Progress... Halo: 810000/1000000 after 422.000000 seconds
+ Progress... Halo: 820000/1000000 after 423.000000 seconds
+ Progress... Halo: 830000/1000000 after 425.000000 seconds
+ Progress... Halo: 840000/1000000 after 427.000000 seconds
+ Progress... Halo: 850000/1000000 after 428.000000 seconds
+ Progress... Halo: 860000/1000000 after 430.000000 seconds
+ Progress... Halo: 870000/1000000 after 431.000000 seconds
+ Progress... Halo: 880000/1000000 after 433.000000 seconds
+ Progress... Halo: 890000/1000000 after 434.000000 seconds
+ Progress... Halo: 900000/1000000 after 436.000000 seconds
+ Progress... Halo: 910000/1000000 after 437.000000 seconds
+ Progress... Halo: 920000/1000000 after 439.000000 seconds
+ Progress... Halo: 930000/1000000 after 440.000000 seconds
+ Progress... Halo: 940000/1000000 after 441.000000 seconds
+ Progress... Halo: 950000/1000000 after 442.000000 seconds
+ Progress... Halo: 960000/1000000 after 443.000000 seconds
+ Progress... Halo: 970000/1000000 after 444.000000 seconds
+ Progress... Halo: 980000/1000000 after 445.000000 seconds
+ Progress... Halo: 990000/1000000 after 445.000000 seconds[70C[[32;1mDONE[0m]
+
+3. Up to this point 465.000000 seconds passed.
+Saving haloes ... 
+  Filename : /home/epfl/variu/phd/voids/chengscodes/linhalo_fix_ampl_CIC/output/halos_G512CIC_BS2500_S1001000_6214031.dat.
+[70C[[32;1mDONE[0m]
+The code has finished in 474.000000 seconds 

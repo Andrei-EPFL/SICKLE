@@ -33,7 +33,7 @@ int init_field(const int Ngrid, FFT_CMPLX **mesh, FFT_PLAN *plan)
 {
   size_t size = (size_t) Ngrid * Ngrid * Ngrid;
 
-  printf("  Initialising mesh... \n");
+  printf("  Initialising the density field mesh... \n");
   fflush(stdout);
 
   *mesh = FFT_MALLOC(sizeof(FFT_CMPLX) * size);
@@ -71,14 +71,14 @@ int init_halos(const long int Nh, HALOS **halos) {
 }
 
 int init_index_arr(const long int Nh, size_t **index_arr) {
-  printf("  Initialising index_arr... \n");
+  printf("  Initialising array of indices for the %ld largest density values ... \n", 8 * Nh);
   fflush(stdout);
   
   //(ptr) = (type *) malloc(sizeof(type) * (n));
   *index_arr = malloc( sizeof(size_t) * 8 * Nh );
   
   if (!(*index_arr)) {
-    P_ERR("failed to allocate memory for the index_arr.\n");
+    P_ERR("failed to allocate memory for the array of indices.\n");
     return ERR_MEM;
   }
   return 0;
@@ -237,7 +237,7 @@ int gauss_ran_field(const CONF *conf, const double *lnk, const double *lnP,
 #endif
 
   printf("\r  FFT finished successfully.\n");
-
+  fflush(stdout);
   /*for (k = 0; k < Ng; k++) {
     printf("k=%d\n", k);
     for (j = Ng - 1; j >= 0; j--) {

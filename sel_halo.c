@@ -350,14 +350,23 @@ void select_dens(FFT_CMPLX *mesh, HALOS *halos, size_t *index_arr, const int Ng,
   gsl_rng *r;
   r = gsl_rng_alloc(gsl_rng_mt19937);
   gsl_rng_set(r, 49823);  
-
+  
+  printf("\r Take the indices of 8Nhalo values from the mesh ... \n");
+  fflush(stdout);
 #ifdef OMP
 #pragma omp parallel for
 #endif
   for (i = 0; i < 8 * Nh; i++) index_arr[i] = i;
 
+  
+  printf("\r IndexSort the 8Nhalo values from the mesh in ascending order ... \n");
+  fflush(stdout);
+
   qsort_dens_asc(mesh, index_arr, 8 * Nh, 0);
-    
+  
+  printf("\r Obtain the indices of the 8Nhalo largest values from the mesh ... \n");
+  fflush(stdout);
+  
   for (i = 8 * Nh; i < Ntot; i++) {
     if (mesh[i][0] > mesh[index_arr[0]][0]) {
       index_arr[0] = i;
@@ -371,23 +380,41 @@ void select_dens(FFT_CMPLX *mesh, HALOS *halos, size_t *index_arr, const int Ng,
       }
     }
   }
+
+  printf("\r IndexSort the 8Nhalo LARGEST values from the mesh in descending order... \n");
+  fflush(stdout);
+  
   qsort_dens_desc(mesh, index_arr, 8 * Nh, 0);
 
 
 
   // for(i = 0; i < 8 * Nh; i++)
   // {
-  //   printf("\n%d %lf %lf", (int)i, (double)index_arr[i], (double)mesh[index_arr[i]][0]);//, (double)index_arr[8*Nh-100 + i].index, (double)index_arr[index_arr[8*Nh-100 + i].index] );
+  //   printf("\n%d %lf %0.10lf", (int)i, (double)index_arr[i], mesh[index_arr[i]][0]);//, (double)index_arr[8*Nh-100 + i].index, (double)index_arr[index_arr[8*Nh-100 + i].index] );
   // }
-  printf("\nThe maximum density is %f ", mesh[index_arr[0]][0]);
-  printf("\nThe minimum density is %f ", mesh[index_arr[8*Nh - 1]][0]);
+  printf("\nThe maximum density in the mesh is %f ", mesh[index_arr[0]][0]);
+  printf("\nThe minimum density in the array of 8Nhalo largest values is %f \n", mesh[index_arr[8*Nh - 1]][0]);
   fflush(stdout);
   //printf("\nPozitie: %lf %lf", (double)binary_search(index_arr, 0, 8 * Nh - 1, MESH_IDX(Ng, 2, 2, 1), 8 * Nh), (double) MESH_IDX(Ng, 2, 2, 1));
   //FILE *ofile;
   //ofile = fopen("./output/test.txt", "w+");
-
+  
+  printf("\r Inverse CIC and populate the mesh with halos ... \n Start the time counter");
+  fflush(stdout);
+  
   max_index = 8 * Nh - 1;
+  time_t start = time(NULL);
+  time_t end;
+  float seconds;
   for (size_t u = 0; u < Nh; u++) {
+    
+    if(u%10000==0) {
+      end = time(NULL);
+      seconds = (float)(end - start);
+      printf("\n Progress... Halo: %ld/%ld after %f seconds", (long int)u, (long int)Nh, seconds);
+      fflush(stdout);
+    }
+
     idx_max = 0;
     idx_val = index_arr[idx_max];
     
@@ -395,8 +422,6 @@ void select_dens(FFT_CMPLX *mesh, HALOS *halos, size_t *index_arr, const int Ng,
     //for (size_t s = 0; s < max_index; i++)
     //  fprintf(ofile, "%ld %ld %0.10lf %ld \n", (long int) s, (long int) index_arr[s], mesh[index_arr[s]][0], (long int) (max_index));
     //fprintf(ofile, "\n");
-    if(u%100000==0)
-      printf("\n%ld/%ld %ld", (long int)u, (long int)Nh, (long int) max_index);
     k = idx_val/(size_t)(Ng * Ng);
     j = (idx_val - (size_t)k * Ng * Ng) / (size_t)Ng;
     i = idx_val - (size_t)k * Ng * Ng - (size_t)j * Ng;

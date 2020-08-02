@@ -29,7 +29,8 @@ int main(int argc, char *argv[]) {
   }
   print_conf(&conf);
   printf(FMT_DONE);
-
+  
+  /*Initizalizations */
   printf("Processing the linear power spectrum ... ");
   fflush(stdout);
   if ((ecode = read_pk(conf.pkfile, &k, &P, &Nk))) {
@@ -43,28 +44,29 @@ int main(int argc, char *argv[]) {
   printf(FMT_DONE);
   
   if ((ecode = init_halos(conf.Nhalo, &halos))) {
-    P_EXT("failed to generate the halos.\n");
+    P_EXT("failed to initialize the halos.\n");
     return ecode;
   }
   printf(FMT_DONE);
 
   if ((ecode = init_index_arr(conf.Nhalo, &index_arr))) {
-    P_EXT("failed to generate the index_arr.\n");
+    P_EXT("failed to initialize the array of indices.\n");
     return ecode;
   }
   printf(FMT_DONE);
   
-  printf("Generating the density field and the inverted density field... ");
+  printf("Generating the density field... ");
   fflush(stdout);
   if ((ecode = init_field(conf.Ngrid, &mesh, &fp))) {
-    P_EXT("failed to generate the density field.\n");
+    P_EXT("failed to initialize the density field.\n");
     return ecode;
   }
   time_t end = time(NULL);
   float seconds = (float)(end - start);
-  printf("Up to there it took %f seconds\n", seconds);
+  printf("1. Up to this point %f seconds passed.\n The counter is set to zero again.\n", seconds);
   fflush(stdout);
-    
+  
+  /* Generation of the gaussian random field */
   start = time(NULL);
   if ((ecode = gauss_ran_field(&conf, k, P, Nk, &fp, mesh))) {
     P_EXT("failed to generate the density field.\n");
@@ -76,21 +78,21 @@ int main(int argc, char *argv[]) {
   printf(FMT_DONE);
   end = time(NULL);
   seconds = (float)(end - start);
-  printf("Up to there it took %f seconds\n", seconds);
+  printf("2. Up to this point %f seconds passed.\n The counter is set to zero again.\n", seconds);
   fflush(stdout);
   
+  /*Populate the mesh with halos*/
   start = time(NULL);
-  
-  printf("Populating with haloes the normal mesh... ");
+  printf("Populating the mesh with haloes... ");
   fflush(stdout);
   select_dens(mesh, halos, index_arr, conf.Ngrid, conf.Nhalo, conf.Lbox);
-  fflush(stdout);
   printf(FMT_DONE);
   end = time(NULL);
   seconds = (float)(end - start);
-  printf("Up to there it took %f seconds\n", seconds);
+  printf("\n3. Up to this point %f seconds passed.\n", seconds);
   fflush(stdout);
   
+  /* Save halos */
   printf("Saving haloes ... ");
   fflush(stdout);
   if ((ecode = save_halo(conf.output, halos, conf.Nhalo))) {
@@ -112,6 +114,6 @@ int main(int argc, char *argv[]) {
 
   FFT_FREE(mesh);
   time_t endall = time(NULL);
-  printf("Everything took %f seconds\n", (float)(endall - startall));
+  printf("The code has finished in %f seconds \n", (float)(endall - startall));
   return 0;
 }
