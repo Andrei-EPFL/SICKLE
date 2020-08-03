@@ -1,6 +1,0 @@
-srun: Job step aborted: Waiting up to 32 seconds for job step to finish.
-srun: got SIGCONT
-slurmstepd: error: *** JOB 3308997 ON node247 CANCELLED AT 2020-07-31T17:46:52 ***
-srun: forcing job termination
-slurmstepd: error: *** STEP 3308997.0 ON node247 CANCELLED AT 2020-07-31T17:46:52 ***
-srun: error: node247: task 0: Terminated
