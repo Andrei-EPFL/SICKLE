@@ -70,14 +70,14 @@ int init_halos(const long int Nh, HALOS **halos) {
   return 0;
 }
 
-int init_index_arr(const long int Nh, size_t **index_arr) {
+int init_max_dens(const long int Nh,  MAX_DENS **max_dens) {
   printf("  Initialising array of indices for the %ld largest density values ... \n", 8 * Nh);
   fflush(stdout);
   
   //(ptr) = (type *) malloc(sizeof(type) * (n));
-  *index_arr = malloc( sizeof(size_t) * 8 * Nh );
+  *max_dens = malloc( sizeof(MAX_DENS) * 8 * Nh );
   
-  if (!(*index_arr)) {
+  if (!(*max_dens)) {
     P_ERR("failed to allocate memory for the array of indices.\n");
     return ERR_MEM;
   }

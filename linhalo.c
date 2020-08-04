@@ -7,7 +7,7 @@ int main(int argc, char *argv[]) {
   int ecode;
   double *k, *P;
   size_t Nk;
-  size_t *index_arr;
+  MAX_DENS *max_dens;
   HALOS *halos;
   CONF conf;
 
@@ -49,7 +49,7 @@ int main(int argc, char *argv[]) {
   }
   printf(FMT_DONE);
 
-  if ((ecode = init_index_arr(conf.Nhalo, &index_arr))) {
+  if ((ecode = init_max_dens(conf.Nhalo, &max_dens))) {
     P_EXT("failed to initialize the array of indices.\n");
     return ecode;
   }
@@ -85,7 +85,7 @@ int main(int argc, char *argv[]) {
   start = time(NULL);
   printf("Populating the mesh with haloes... ");
   fflush(stdout);
-  select_dens(mesh, halos, index_arr, conf.Ngrid, conf.Nhalo, conf.Lbox);
+  select_dens(mesh, halos, max_dens, conf.Ngrid, conf.Nhalo, conf.Lbox);
   printf(FMT_DONE);
   end = time(NULL);
   seconds = (float)(end - start);
@@ -93,14 +93,14 @@ int main(int argc, char *argv[]) {
   fflush(stdout);
   
   /* Save halos */
-  printf("Saving haloes ... ");
-  fflush(stdout);
-  if ((ecode = save_halo(conf.output, halos, conf.Nhalo))) {
-    P_EXT("failed to generate the halo catalogue.\n");
-    return ecode;
-  }
-  free(halos);
-  printf(FMT_DONE);
+  // printf("Saving haloes ... ");
+  // fflush(stdout);
+  // if ((ecode = save_halo(conf.output, halos, conf.Nhalo))) {
+  //   P_EXT("failed to generate the halo catalogue.\n");
+  //   return ecode;
+  // }
+  // free(halos);
+  // printf(FMT_DONE);
 
   // if (conf.savedm) {
   //   printf("Saving the density field ... ");

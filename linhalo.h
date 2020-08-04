@@ -25,13 +25,18 @@ typedef struct {
   size_t dens;
 } HALOS;
 
+typedef struct {
+  FFT_REAL dens;  // density value
+  size_t idx;  // index of the density value in the density field
+} MAX_DENS;
+
 int read_pk(const char *, double **, double **, size_t *);
 
 int init_pk(double *, double *, const size_t, const CONF *);
 
 int init_halos(const long int, HALOS **);
 
-int init_index_arr(const long int, size_t **);
+int init_max_dens(const long int, MAX_DENS **);
 
 int save_halo(const char *, HALOS *, const size_t);
 
@@ -42,11 +47,12 @@ int init_field(const int, FFT_CMPLX **, FFT_PLAN *);
 int gauss_ran_field(const CONF *, const double *, const double *,
     const size_t, FFT_PLAN *, FFT_CMPLX *);
 
-void qsort_dens_asc(FFT_CMPLX *, size_t *, const size_t, int);
+void qsort_dens_asc(MAX_DENS *, const size_t);
 
-void qsort_dens_desc(FFT_CMPLX *, size_t *, const size_t, int);
+void qsort_dens_desc(MAX_DENS *, const size_t);
+void qsort_mesh_desc(FFT_CMPLX *, const size_t, int);
 
-void select_dens(FFT_CMPLX *, HALOS *, size_t *, const int, const size_t, const double);
+void select_dens(FFT_CMPLX *, HALOS *, MAX_DENS *, const int, const size_t, const double);
 
 int save_dens(const char *, FFT_CMPLX *, const int);
 
