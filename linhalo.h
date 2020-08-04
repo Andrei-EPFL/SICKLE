@@ -50,7 +50,6 @@ int gauss_ran_field(const CONF *, const double *, const double *,
 void qsort_dens_asc(MAX_DENS *, const size_t);
 
 void qsort_dens_desc(MAX_DENS *, const size_t);
-void qsort_mesh_desc(FFT_CMPLX *, const size_t, int);
 
 void select_dens(FFT_CMPLX *, HALOS *, MAX_DENS *, const int, const size_t, const double);
 
