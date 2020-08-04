@@ -4,77 +4,6 @@
 #include <gsl/gsl_rng.h>
 #include <gsl/gsl_randist.h>
 
-static void qsort_mesh_desc(FFT_CMPLX *mesh, const size_t N, int index)
-{
-  //const int index = 1; //This index tells us if we sort the imaginary(1) part or real(0) one 
-  const int M = 7;
-  const int NSTACK = 64;
-  long istack[NSTACK];
-  long i, ir, j, k, jstack, l;
-  FFT_REAL a, tmp;
-
-  jstack = -1;
-  l = 0;
-  ir = N - 1;
-
-  for (;;) {
-    if (ir - l < M) {
-      for (j = l + 1; j <= ir; j++) {
-        a = mesh[j][index];
-        for (i = j - 1; i >= l; i--) {
-          if (mesh[i][index] >= a) break;
-          mesh[i + 1][index] = mesh[i][index];
-        }
-        mesh[i + 1][index] = a;
-      }
-      if (jstack < 0) break;
-      ir = istack[jstack--];
-      l = istack[jstack--];
-    }
-    else {
-      k = (l + ir) >> 1;
-      SWAP(mesh[k][index], mesh[l + 1][index], tmp);
-      if (mesh[l][index] < mesh[ir][index]) {
-        SWAP(mesh[l][index], mesh[ir][index], tmp);
-      }
-      if (mesh[l + 1][index] < mesh[ir][index]) {
-        SWAP(mesh[l + 1][index], mesh[ir][index], tmp);
-      }
-      if (mesh[l][index] < mesh[l + 1][index]) {
-        SWAP(mesh[l][index], mesh[l + 1][index], tmp);
-      }
-      i = l + 1;
-      j = ir;
-      a = mesh[l + 1][index];
-      for (;;) {
-        do i++; while (mesh[i][index] > a);
-        do j--; while (mesh[j][index] < a);
-        if (j < i) break;
-        SWAP(mesh[i][index], mesh[j][index], tmp);
-      }
-      mesh[l + 1][index] = mesh[j][index];
-      mesh[j][index] = a;
-      jstack += 2;
-      if (jstack >= NSTACK) {
-        P_EXT("NSTACK for qsort is too small.\n");
-        exit(ERR_OTHER);
-      }
-      if (ir - i + 1 >= j - 1) {
-        istack[jstack] = ir;
-        istack[jstack - 1] = i;
-        ir = j - 1;
-      }
-      else {
-        istack[jstack] = j - 1;
-        istack[jstack - 1] = l;
-        l = i;
-      }
-    }
-  }
-}
-
-
-
 /* Quicksort the fist N imaginary elements of mesh. */
 void qsort_dens_asc(MAX_DENS *max_dens, const size_t N) {
   //const int index = 1; //This index tells us if we sort the imaginary(1) part or real(0) one 
@@ -120,74 +49,6 @@ void qsort_dens_asc(MAX_DENS *max_dens, const size_t N) {
       for (;;) {
         do i++; while (max_dens[i].dens < a.dens);
         do j--; while (max_dens[j].dens > a.dens);
-        if (j < i) break;
-        SWAP(max_dens[i], max_dens[j], tmp);
-      }
-      max_dens[l + 1] = max_dens[j];
-      max_dens[j] = a;
-      jstack += 2;
-      if (jstack >= NSTACK) {
-        P_EXT("NSTACK for qsort is too small.\n");
-        exit(ERR_OTHER);
-      }
-      if (ir - i + 1 >= j - 1) {
-        istack[jstack] = ir;
-        istack[jstack - 1] = i;
-        ir = j - 1;
-      }
-      else {
-        istack[jstack] = j - 1;
-        istack[jstack - 1] = l;
-        l = i;
-      }
-    }
-  }
-}
-
-void qsort_dens_desc(MAX_DENS *max_dens, const size_t N) {
-  //const int index = 1; //This index tells us if we sort the imaginary(1) part or real(0) one 
-  const int M = 7;
-  const int NSTACK = 128;
-  long istack[NSTACK];
-  long i, ir, j, k, jstack, l;
-  MAX_DENS a, tmp;
-
-  jstack = -1;
-  l = 0;
-  ir = N - 1;
-
-  for (;;) {
-    if (ir - l < M) {
-      for (j = l + 1; j <= ir; j++) {
-        a = max_dens[j];
-        for (i = j - 1; i >= l; i--) {
-          if (max_dens[i].dens >= a.dens) break;
-          max_dens[i + 1] = max_dens[i];
-        }
-        max_dens[i + 1] = a;
-      }
-      if (jstack < 0) break;
-      ir = istack[jstack--];
-      l = istack[jstack--];
-    }
-    else {
-      k = (l + ir) >> 1;
-      SWAP(max_dens[k], max_dens[l + 1], tmp);
-      if (max_dens[l].dens < max_dens[ir].dens) {
-        SWAP(max_dens[l], max_dens[ir], tmp);
-      }
-      if (max_dens[l + 1].dens < max_dens[ir].dens) {
-        SWAP(max_dens[l + 1], max_dens[ir], tmp);
-      }
-      if (max_dens[l].dens < max_dens[l + 1].dens) {
-        SWAP(max_dens[l], max_dens[l + 1], tmp);
-      }
-      i = l + 1;
-      j = ir;
-      a = max_dens[l + 1];
-      for (;;) {
-        do i++; while (max_dens[i].dens > a.dens);
-        do j--; while (max_dens[j].dens < a.dens);
         if (j < i) break;
         SWAP(max_dens[i], max_dens[j], tmp);
       }
@@ -337,6 +198,7 @@ void select_dens(FFT_CMPLX *mesh, HALOS *halos, MAX_DENS *max_dens, const int Ng
       }
     }
   }
+  
   printf("\nThe minimum density in the array of 8Nhalo largest values is %f \n", max_dens[0].dens);
   
   printf("\r Cast the memory allocated for the mesh to an array of indices and initialize it with SIZE_MAX ... \n");
@@ -351,7 +213,6 @@ void select_dens(FFT_CMPLX *mesh, HALOS *halos, MAX_DENS *max_dens, const int Ng
     index_arr[i] = Ntot + 1;
   }
   
-
   printf("\r Create a Max-Heap with 8Nhalo LARGEST values from the max_dens... \n");
   fflush(stdout);
   
@@ -367,22 +228,7 @@ void select_dens(FFT_CMPLX *mesh, HALOS *halos, MAX_DENS *max_dens, const int Ng
       break;
   }
 
-  
-  /* qsort_dens_desc(max_dens, 8 * Nh);
-  qsort_mesh_desc(mesh, Ntot, 0);
-
-
-  for(i = 0; i < Ntot; i++)
-  {
-    printf("\n%d %0.10lf", (int)i, mesh[i][0]);//, (double)index_arr[8*Nh-100 + i].index, (double)index_arr[index_arr[8*Nh-100 + i].index] );
-  }
-  printf("\n\n\n");
-  for(i = 0; i < 8 * Nh; i++)
-  {
-    printf("\n%d %0.10lf %d %d", (int)i, max_dens[i].dens, (int) index_arr[max_dens[i].idx], (int) max_dens[i].idx);//, (double)index_arr[8*Nh-100 + i].index, (double)index_arr[index_arr[8*Nh-100 + i].index] );
-  }*/
-
-  printf("\nThe maximum density in the mesh is %f ", max_dens[0].dens);
+  printf("The maximum density in the mesh is %f \n", max_dens[0].dens);
   fflush(stdout);
   
   printf("\r Inverse CIC and populate the mesh with halos ... \n Start the time counter");
@@ -391,7 +237,7 @@ void select_dens(FFT_CMPLX *mesh, HALOS *halos, MAX_DENS *max_dens, const int Ng
   time_t start = time(NULL);
   time_t end;
   float seconds;
-  for (u = 0; u < 1; u++) {
+  for (u = 0; u < Nh; u++) {
     
     idx_max = 0;
     idx_mesh = max_dens[idx_max].idx;
@@ -414,7 +260,7 @@ void select_dens(FFT_CMPLX *mesh, HALOS *halos, MAX_DENS *max_dens, const int Ng
     halos[u].x[2] = (halos[u].x[2] < 0) ? (Lbox + halos[u].x[2]) : halos[u].x[2];
     cic(max_dens, index_arr, halos[u].x[0], halos[u].x[1], halos[u].x[2], Ng, Nh, Lbox);
     
-    if(u%10000==0) {
+    if(u%100000==0) {
       end = time(NULL);
       seconds = (float)(end - start);
       printf("\n Progress... Halo: %ld/%ld after %f seconds", (long int)u, (long int)Nh, seconds);

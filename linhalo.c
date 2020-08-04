@@ -93,14 +93,14 @@ int main(int argc, char *argv[]) {
   fflush(stdout);
   
   /* Save halos */
-  // printf("Saving haloes ... ");
-  // fflush(stdout);
-  // if ((ecode = save_halo(conf.output, halos, conf.Nhalo))) {
-  //   P_EXT("failed to generate the halo catalogue.\n");
-  //   return ecode;
-  // }
-  // free(halos);
-  // printf(FMT_DONE);
+  printf("Saving haloes ... ");
+  fflush(stdout);
+  if ((ecode = save_halo(conf.output, halos, conf.Nhalo))) {
+    P_EXT("failed to generate the halo catalogue.\n");
+    return ecode;
+  }
+  free(halos);
+  printf(FMT_DONE);
 
   // if (conf.savedm) {
   //   printf("Saving the density field ... ");

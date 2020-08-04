@@ -140,7 +140,7 @@ int gauss_ran_field(const CONF *conf, const double *lnk, const double *lnP,
         P = gsl_spline_eval(spline, kv, acc);
         P = exp(P * 0.5);       /* sqrt(P) */
         
-        fac2 = P * norm;
+        fac2 = P * norm/10.;
         theta = gsl_ran_flat(r, 0, 2*M_PI);
         if(k == 0 || k == Ng / 2){
           if(j == 0 || j == Ng / 2){
