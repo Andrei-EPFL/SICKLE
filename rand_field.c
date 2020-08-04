@@ -85,11 +85,11 @@ int init_max_dens(const long int Nh,  MAX_DENS **max_dens) {
 }
 
 int gauss_ran_field(const CONF *conf, const double *lnk, const double *lnP,
-    const size_t Nk, FFT_PLAN *fp, FFT_CMPLX *mesh) {
+    const size_t Nk, FFT_PLAN *fp, FFT_CMPLX *mesh, const double factor) {
   int i, j, k, i_2, j_2, k_2;
   size_t idx, idx_2;
   double fac, norm, fac2, ki, kj, kk, ksq, kv, P, theta;
-  
+  double sqrtfactor = sqrt(factor);
   int Ng;
   gsl_rng *r;
   gsl_interp_accel *acc;
@@ -138,9 +138,9 @@ int gauss_ran_field(const CONF *conf, const double *lnk, const double *lnP,
         ksq = ki * ki + kj * kj + kk * kk;
         kv = log(ksq) * 0.5;    /* log(sqrt(ksq)) */
         P = gsl_spline_eval(spline, kv, acc);
-        P = exp(P * 0.5);       /* sqrt(P) */
+        P = exp(P * 0.5) * sqrtfactor;       /* sqrt(P) */
         
-        fac2 = P * norm/10.;
+        fac2 = P * norm;
         theta = gsl_ran_flat(r, 0, 2*M_PI);
         if(k == 0 || k == Ng / 2){
           if(j == 0 || j == Ng / 2){

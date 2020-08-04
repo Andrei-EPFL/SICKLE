@@ -45,7 +45,7 @@ double return_x(double );
 int init_field(const int, FFT_CMPLX **, FFT_PLAN *);
 
 int gauss_ran_field(const CONF *, const double *, const double *,
-    const size_t, FFT_PLAN *, FFT_CMPLX *);
+    const size_t, FFT_PLAN *, FFT_CMPLX *, const double);
 
 void qsort_dens_asc(MAX_DENS *, const size_t);
 

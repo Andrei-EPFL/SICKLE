@@ -68,7 +68,7 @@ int main(int argc, char *argv[]) {
   
   /* Generation of the gaussian random field */
   start = time(NULL);
-  if ((ecode = gauss_ran_field(&conf, k, P, Nk, &fp, mesh))) {
+  if ((ecode = gauss_ran_field(&conf, k, P, Nk, &fp, mesh, conf.factor))) {
     P_EXT("failed to generate the density field.\n");
     return ecode;
   }

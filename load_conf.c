@@ -33,6 +33,8 @@ int read_conf(const int argc, char *const *argv, CONF *conf) {
   CHECK_COCA(ecode, NHALO);
   ecode = coca_set_param(cfg, 'o', "output", "OUTPUT", COCA_VERBOSE_WARN);
   CHECK_COCA(ecode, OUTPUT);
+  ecode = coca_set_param(cfg, 'a', "factor", "FACTOR", COCA_VERBOSE_WARN);
+  CHECK_COCA(ecode, OUTPUT);
   ecode = coca_set_param(cfg, 'd', "savedm", "SAVE_DENS", COCA_VERBOSE_WARN);
   CHECK_COCA(ecode, SAVE_DENS);
   ecode = coca_set_param(cfg, 'm', "dmout",  "DENS_OUT", COCA_VERBOSE_WARN);
@@ -68,6 +70,8 @@ int read_conf(const int argc, char *const *argv, CONF *conf) {
   CHECK_COCA(ecode, NGRID);
   ecode = coca_get_var(cfg, "BOXSIZE", COCA_DTYPE_DBL, &(conf->Lbox));
   CHECK_COCA(ecode, BOXSIZE);
+  ecode = coca_get_var(cfg, "FACTOR", COCA_DTYPE_DBL, &(conf->factor));
+  CHECK_COCA(ecode, BOXSIZE);
   ecode = coca_get_var(cfg, "SEED", COCA_DTYPE_LONG, &(conf->seed));
   CHECK_COCA(ecode, SEED);
   ecode = coca_get_var(cfg, "NHALO", COCA_DTYPE_LONG, &(conf->Nhalo));
@@ -99,6 +103,10 @@ int check_conf(CONF *conf) {
   
   if (conf->Lbox <= 0) {
     P_ERR(FMT_KEY(BOXSIZE) " is not set correctly.\n");
+    return ERR_RANGE;
+  }
+  if (conf->factor <= 0) {
+    P_ERR(FMT_KEY(FACTOR) " is not set correctly.\n");
     return ERR_RANGE;
   }
   if (conf->seed < 0) {
@@ -190,6 +198,7 @@ void print_conf(const CONF *conf) {
   printf("  " FMT_KEY(PK_INPUT) " = %s\n", conf->pkfile);
   printf("  " FMT_KEY(NGRID) " = %d\n", conf->Ngrid);
   printf("  " FMT_KEY(BOXSIZE) " = %g\n", conf->Lbox);
+  printf("  " FMT_KEY(FACTOR) " = %g\n", conf->factor);
   printf("  " FMT_KEY(SEED) " = %ld\n", conf->seed);
   printf("  " FMT_KEY(NHALO) " = %ld\n", conf->Nhalo);
   printf("  " FMT_KEY(OUTPUT) " = %s\n", conf->output);
@@ -212,6 +221,8 @@ Generate a halo catalogue given an input linear matter power spectrum.\n\n\
         Set the input file for the linear power spectrum.\n\
   -g, --grid\n\
         Set the dimension of grids for the linear density field.\n\
+  -a, --factor\n\
+        Set the factor which multiplies the linear power spectrum.\n\
   -b, --box\n\
         Set the side length of the simulation box.\n\
   -s, --seed\n\
@@ -245,6 +256,8 @@ NGRID           = \n\
         # The number of grids on each side for the simulation box.\n\
 BOXSIZE         = \n\
         # The side length of the simulation box.\n\
+FACTOR          = \n\
+        # The factor which multiplies the linear power spectrum.\n\
 SEED            = \n\
         # The random seed, must be non-negative.\n\
 NHALO           = \n\

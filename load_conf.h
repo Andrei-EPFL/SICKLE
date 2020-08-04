@@ -8,7 +8,7 @@ typedef struct {
   bool force;
   bool savedm;
   int Ngrid;
-  int lowNg;
+  double factor;
   double Lbox;
   long Nhalo;
   long seed;
