@@ -260,7 +260,7 @@ void select_dens(FFT_CMPLX *mesh, HALOS *halos, MAX_DENS *max_dens, const int Ng
     halos[u].x[2] = (halos[u].x[2] < 0) ? (Lbox + halos[u].x[2]) : halos[u].x[2];
     cic(max_dens, index_arr, halos[u].x[0], halos[u].x[1], halos[u].x[2], Ng, Nh, Lbox);
     
-    if(u%100000==0) {
+    if(u%500000==0 || u == Nh - 1) {
       end = time(NULL);
       seconds = (float)(end - start);
       printf("\n Progress... Halo: %ld/%ld after %f seconds", (long int)u, (long int)Nh, seconds);

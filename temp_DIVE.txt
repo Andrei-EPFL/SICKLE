@@ -1,0 +1,1 @@
+/home/epfl/zhaoc/work/codes/DIVE_box/DIVE_box /home/astro/variu/phd/voids/chengscodes/linhalo_fix_ampl_CIC/output/halos_G512CIC_BS2500_S1001000_FAC0.0000001_6214031.dat /hpcstorage/variu/linhalos_tune_test/voids/voids_G512CIC_BS2500_S1001000_FAC0.0000001_6214031.dat 

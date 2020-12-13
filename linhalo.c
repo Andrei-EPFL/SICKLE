@@ -76,11 +76,21 @@ int main(int argc, char *argv[]) {
   free(P);
 
   printf(FMT_DONE);
+  if (conf.savedm) {
+    printf("Saving the density field ... ");
+    fflush(stdout);
+    if ((ecode = save_dens(conf.dmout, mesh, conf.Ngrid))) {
+      P_EXT("failed to save the density field.\n");
+      return ecode;
+    }
+    printf(FMT_DONE);
+  }
   end = time(NULL);
   seconds = (float)(end - start);
   printf("2. Up to this point %f seconds passed.\n The counter is set to zero again.\n", seconds);
   fflush(stdout);
-  
+
+
   /*Populate the mesh with halos*/
   start = time(NULL);
   printf("Populating the mesh with haloes... ");
@@ -101,16 +111,6 @@ int main(int argc, char *argv[]) {
   }
   free(halos);
   printf(FMT_DONE);
-
-  // if (conf.savedm) {
-  //   printf("Saving the density field ... ");
-  //   fflush(stdout);
-  //   if ((ecode = save_dens(conf.dmout, mesh, conf.lowNg))) {
-  //     P_EXT("failed to save the density field.\n");
-  //     return ecode;
-  //   }
-  //   printf(FMT_DONE);
-  // }
 
   FFT_FREE(mesh);
   time_t endall = time(NULL);
