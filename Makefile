@@ -1,10 +1,9 @@
 CC = gcc
 CXX = g++
-CFLAGS = -O3 -Wall -g -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk
-CXXFLAGS = -O3 -Wall -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk
+CFLAGS = -O3 -Wall
+CXXFLAGS = -O3 -Wall
 #OPTS = -DSINGLE_PREC -lfftw3f -lfftw3f_omp -fopenmp -DOMP
 OPTS = -DDOUBLE_PREC -lfftw3 -lfftw3_omp -fopenmp -DOMP
-OPTS += -I/Users/czhao/lib/fftw-3.3.8/include -L/Users/czhao/lib/fftw-3.3.8/lib -I/opt/local/include -L/opt/local/lib
 
 LIBS = -lm -lgsl -lgslcblas
 INCL = -Imake_survey
