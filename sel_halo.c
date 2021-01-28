@@ -4,6 +4,19 @@
 #include <gsl/gsl_rng.h>
 #include <gsl/gsl_randist.h>
 
+#include "cuboid_c.h"
+#include "simple_reader.c"
+#include "check_fopen.c"
+#include "config.c"
+#include "rng_gsl.c"
+#include "spline_gsl.c"
+#include "coord_transforms.c"
+#include "cosmology.c"
+#include "zsel.c"
+#include "minimal_mangle.c"
+
+#define NSPLINE 10000   /* number of elements to train cosmology spline with */
+
 /* Quicksort the fist N imaginary elements of mesh. */
 void qsort_dens_asc(MAX_DENS *max_dens, const size_t N) {
   //const int index = 1; //This index tells us if we sort the imaginary(1) part or real(0) one 
@@ -272,10 +285,54 @@ void select_dens(FFT_CMPLX *mesh, HALOS *halos, MAX_DENS *max_dens, const int Ng
 }
 
 
-int save_halo(const char *fname, HALOS *halos, const size_t Nh) {
+int save_halo(const char *fname, char *mksurvey, HALOS *halos,
+    const size_t Nh) {
   FILE *fp;
   int i, m, n;
   char *buf, *end, *cache;
+
+  CONFIG *conf = NULL;
+  SPLINE *spl = NULL;
+  MANGLE_PLY *ply = NULL;
+  ZSEL *zsel = NULL;
+  double rmin, rmax;
+  void *cub = NULL;
+  rmin = rmax = 0;
+
+  /* Initialize make_survey */
+  if (*mksurvey) {
+    conf = conf_readfile(mksurvey);
+    cub = cuboid_init(conf->u);  /* initialize cuboid remapping */
+    COSMO *cosmo = cosmo_init();        /* initialize cosmology */
+    cosmo_set_omega_m(cosmo, conf->omega_m);
+    cosmo_set_omega_l(cosmo, conf->omega_l);
+    cosmo_set_h(cosmo, 1.0);
+
+    /* init cosmo spline rad -> z */
+    spl = spline_init(SPLINE_TYPE_CUBIC);
+    double zmin = 1e9, zmax = -1e9;
+    if (conf->zmin >= 0) zmin = 0.9 * conf->zmin;
+    else zmin = 1.1 * conf->zmin;
+    zmax = 1.1 * conf->zmax;
+
+    rmin = cosmo_dist_co_los(cosmo, zmin);
+    rmax = cosmo_dist_co_los(cosmo, zmax);
+    double dz = (zmax - zmin) / (NSPLINE - 1);
+    for (double z = zmin, i = 0; i < NSPLINE; i++, z += dz) {
+      double dc = cosmo_dist_co_los(cosmo, z);
+      spline_data_add(spl, dc, z);
+    }
+    spline_data_finalize(spl);
+
+    /* initialize MANGLE polygon reading */
+    if (!conf->file_mask || !(*conf->file_mask)) {
+      P_ERR("Mangle polygon mask not set.\n");
+      return ERR_FILE;
+    }
+    ply = mply_read_file(conf->file_mask);
+    if (conf->file_zsel && *conf->file_zsel)
+      zsel = zsel_read_file(conf->file_zsel);
+  }
 
   printf("\n  Filename : %s.\n", fname);
   if (!(fp = fopen(fname, "w"))) {
@@ -283,10 +340,12 @@ int save_halo(const char *fname, HALOS *halos, const size_t Nh) {
     return ERR_FILE;
   }
   
+/*
 #ifdef OMP
 #pragma omp parallel private(buf,end,cache,n) shared(fp)
 {
 #endif
+*/
   buf = calloc(CHUNK, sizeof *buf);
   cache = calloc(MAX_LEN_LINE, sizeof *cache);
   if (!buf || !cache) {
@@ -295,12 +354,89 @@ int save_halo(const char *fname, HALOS *halos, const size_t Nh) {
   }
   end = buf;
 
+  gsl_rng *r = gsl_rng_alloc(gsl_rng_mt19937);
+  if (*mksurvey) gsl_rng_set(r, (conf->seed << 1) + omp_get_thread_num());
+/*
 #ifdef OMP
 #pragma omp for private(m)
 #endif
+*/
   for (i = 0; i < Nh; i++) {
+    double *x = halos[i].x;
+    /* Apply make_survey */
+    if (*mksurvey) {
+      /* Normalize coordinates to [0,1] */
+      for (int k = 0; k < 3; k++) {
+        x[k] /= conf->lbox;
+        if (x[k] < 0 || x[k] > 1) {
+          P_EXT("input out of expected range [0,LBOX = %g]\n", conf->lbox);
+          exit(ERR_RANGE);
+        }
+      }
+      /* check if we want to flip any axes */
+      for (int k = 0; k < 3; k++) {
+        if (conf->pre_rot[k] != 0) {
+          double ang = conf->pre_rot[k] * M_PI * 0.5;
+          /* center on the origin (0,0,0) */
+          for (int kk = 0; kk < 3; kk++) x[kk] -= 0.5;
+          ct_rotate_about_axis(ang, x, k);
+          /* correct recentering to range [0,1] */
+          for (int kk = 0; kk < 3; kk++) x[kk] += 0.5;
+        }
+      }
+
+      /* remap point into cuboid */
+      double rx[3];
+      cuboid_transform(cub, x[0], x[1], x[2], rx, rx + 1, rx + 2);
+
+      /* translate, and recast back to input dimensions */
+      for (int k = 0; k < 3; k++) x[k] = rx[k] * conf->lbox + conf->t[k];
+
+      /* get distance of point, these should be rotationally invariant */
+      double rad = ct_vec_mag(x);
+
+      /* radial comoving distance -> redshift  */
+      if (rad < rmin) continue;
+      if (rad > rmax) continue;
+      double z = spline_eval(spl, rad);
+
+      /* trim by redshift */
+      if (z > conf->zmax) continue;
+      if (z < conf->zmin) continue;
+
+      /* check redshift selection */
+      if (zsel) {
+        double p = zsel_eval(zsel, z);
+        if (p < 1 && p < gsl_rng_uniform(r)) continue;
+      }
+
+      /* rotate */
+      for (int k = 0; k < 3; k++) {
+        if (conf->rot[k])
+          ct_rotate_about_axis(ct_rad_from_deg(conf->rot[k]), x, k);
+      }
+
+      /* project onto sky: (x,y,z) -> (ra,dec) */
+      double ra, dec;
+      ct_xyz_to_radec( x, &ra, &dec );
+
+      /* check mangle mask  */
+      if (ply) {
+        MANGLE_INT ipoly;
+        ipoly = mply_find_polyindex_radec(ply, ra, dec);
+        if (ipoly < 0) continue;
+        double weight = mply_weight_from_index(ply, ipoly);
+        if (weight < conf->min_sky_weight) continue;
+        if (conf->downsample_sky) if (weight < gsl_rng_uniform(r)) continue;
+      }
+
+      x[0] = ra;
+      x[1] = dec;
+      x[2] = z;
+    }
+
     n = snprintf(cache, MAX_LEN_LINE,
-        OFMT_REAL " " OFMT_REAL " " OFMT_REAL " " OFMT_REAL "\n", halos[i].x[0], halos[i].x[1], halos[i].x[2], (double)halos[i].dens);
+        OFMT_REAL " " OFMT_REAL " " OFMT_REAL " " OFMT_REAL "\n", x[0], x[1], x[2], (double)halos[i].dens);
     if (n < 0 || n >= MAX_LEN_LINE) {
       P_EXT(FMT_KEY(MAX_LEN_LINE)
           " in `define.h' is not large enough.\n");
@@ -316,18 +452,22 @@ int save_halo(const char *fname, HALOS *halos, const size_t Nh) {
       end += m;
     }
     else {                              /* write buf to file */
+/*
 #ifdef OMP
 #pragma omp critical
       {
 #endif
+*/
       if (fwrite(buf, sizeof(char) * (end - buf), 1, fp) != 1) {
         P_EXT("failed to write to output:\n%s\n", cache);
         exit(ERR_FILE);
       }
       fflush(fp);
+/*
 #ifdef OMP
       }
 #endif
+*/
       m = cnt_strcpy(buf, cache, n + 1);
       if (m >= n + 1) {
         P_EXT("unexpected error for writing line:\n%s\n", cache);
@@ -338,27 +478,34 @@ int save_halo(const char *fname, HALOS *halos, const size_t Nh) {
   }
 
   if ((n = end - buf) > 0) {
+/*
 #ifdef OMP
 #pragma omp critical
     {
 #endif
+*/
     if (fwrite(buf, sizeof(char) * n, 1, fp) != 1) {
       P_EXT("failed to write to output:\n%s\n", cache);
       exit(ERR_FILE);
     }
     fflush(fp);
+/*
 #ifdef OMP
     }
 #endif
+*/
   }
 
   free(buf);
   free(cache);
 
+/*
 #ifdef OMP
 }
 #endif
+*/
 
+  if (*mksurvey) cuboid_destroy(cub);
   fclose(fp);
   return 0;
 }

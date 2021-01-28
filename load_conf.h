@@ -14,6 +14,7 @@ typedef struct {
   long seed;
   mystr config;
   mystr pkfile;
+  mystr mksurvey;
   mystr output;
   mystr dmout;
 } CONF;

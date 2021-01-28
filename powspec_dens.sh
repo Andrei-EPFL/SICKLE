@@ -1,1 +1,0 @@
-../powspec_cross/powspec -c ../powspec_cross/powspec.conf -a ./output/dens_G512CIC_BS2500_S1001000_FAC1_6214031.dat -b NONE -o ./output/dens_G512CIC_BS2500_S1001000_FAC1_6214031.dat.pspec > ./output/out.psk_new.out &

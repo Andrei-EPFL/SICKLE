@@ -38,7 +38,7 @@ int init_halos(const long int, HALOS **);
 
 int init_max_dens(const long int, MAX_DENS **);
 
-int save_halo(const char *, HALOS *, const size_t);
+int save_halo(const char *, char *, HALOS *, const size_t);
 
 double return_x(double );
 

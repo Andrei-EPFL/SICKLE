@@ -105,7 +105,7 @@ int main(int argc, char *argv[]) {
   /* Save halos */
   printf("Saving haloes ... ");
   fflush(stdout);
-  if ((ecode = save_halo(conf.output, halos, conf.Nhalo))) {
+  if ((ecode = save_halo(conf.output, conf.mksurvey, halos, conf.Nhalo))) {
     P_EXT("failed to generate the halo catalogue.\n");
     return ecode;
   }

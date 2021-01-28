@@ -31,6 +31,8 @@ int read_conf(const int argc, char *const *argv, CONF *conf) {
   CHECK_COCA(ecode, SEED);
   ecode = coca_set_param(cfg, 'n', "num",    "NHALO", COCA_VERBOSE_WARN);
   CHECK_COCA(ecode, NHALO);
+  ecode = coca_set_param(cfg, 'l', "mksurvey", "MKSURVEY", COCA_VERBOSE_WARN);
+  CHECK_COCA(ecode, MKSURVEY)
   ecode = coca_set_param(cfg, 'o', "output", "OUTPUT", COCA_VERBOSE_WARN);
   CHECK_COCA(ecode, OUTPUT);
   ecode = coca_set_param(cfg, 'a', "factor", "FACTOR", COCA_VERBOSE_WARN);
@@ -80,6 +82,9 @@ int read_conf(const int argc, char *const *argv, CONF *conf) {
   CHECK_COCA(ecode, OUTPUT);
   ecode = coca_get_var(cfg, "SAVE_DENS", COCA_DTYPE_BOOL, &(conf->savedm));
   CHECK_COCA(ecode, SAVE_DENS);
+  ecode = coca_get_var(cfg, "MKSURVEY", COCA_DTYPE_STR, &(conf->mksurvey));
+  if (ecode == COCA_ERR_NOT_SET) conf->mksurvey[0] = '\0';
+  else CHECK_COCA(ecode, MKSURVEY);
   ecode = coca_get_var(cfg, "DENS_OUT", COCA_DTYPE_STR, &(conf->dmout));
   if (ecode == COCA_ERR_NOT_SET) conf->dmout[0] = '\0';
   else CHECK_COCA(ecode, DENS_OUT);
@@ -130,6 +135,8 @@ int check_conf(CONF *conf) {
   if (conf->savedm)
     if ((ecode = check_output(conf->dmout, "DENS_OUT", conf->force)))
       return ecode;
+  if (*conf->mksurvey && (ecode = check_input(conf->mksurvey, "MKSURVEY")))
+    return ecode;
   return 0;
 }
 
@@ -201,6 +208,7 @@ void print_conf(const CONF *conf) {
   printf("  " FMT_KEY(FACTOR) " = %g\n", conf->factor);
   printf("  " FMT_KEY(SEED) " = %ld\n", conf->seed);
   printf("  " FMT_KEY(NHALO) " = %ld\n", conf->Nhalo);
+  if (*conf->mksurvey) printf("  " FMT_KEY(MKSURVEY) " = %s\n", conf->mksurvey);
   printf("  " FMT_KEY(OUTPUT) " = %s\n", conf->output);
   printf("  " FMT_KEY(SAVE_DENS) " = %d\n", conf->savedm);
   if (conf->savedm)
