@@ -1,7 +1,7 @@
 CC = gcc
 CFLAGS = -O3 -Wall -std=c99 -g
-#OPTS = -DSINGLE_PREC -lfftw3f -lfftw3f_omp -fopenmp -DOMP
-OPTS = -DDOUBLE_PREC -lfftw3 -lfftw3_omp -fopenmp -DOMP
+OPTS = -DSINGLE_PREC -lfftw3f -lfftw3f_omp -fopenmp -DOMP
+#OPTS = -DDOUBLE_PREC -lfftw3 -lfftw3_omp -fopenmp -DOMP
 
 LIBS = -lm -lgsl -lgslcblas
 INCL =

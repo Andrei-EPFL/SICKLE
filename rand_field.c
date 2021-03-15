@@ -276,3 +276,32 @@ int save_dens(const char *fname, FFT_CMPLX *mesh, const int Ng) {
   fclose(fp);
   return 0;
 }
+
+int save_dens_binary(const char *fname, FFT_CMPLX *mesh, const int Ng)
+{
+  FILE *fp;
+  size_t i, Ntot;
+
+  printf("\n  Filename : %s.\n  Preparing for data ... ", fname);
+  fflush(stdout);
+
+  Ntot = (size_t) Ng * Ng * Ng;
+#ifdef OMP
+#pragma omp parallel for
+#endif
+  for (i = 0; i < Ntot; i++) mesh[i >> 1][i % 2] = mesh[i][0];
+
+  if (!(fp = fopen(fname, "w"))) {
+    P_ERR("cannot write to file `%s'.\n", fname);
+    return ERR_FILE;
+  }
+
+  if (fwrite(mesh, sizeof(FFT_REAL) * Ntot, 1, fp) != 1) {
+    P_EXT("failed to write density field to file `%s'.\n", fname);
+    return ERR_FILE;
+  }
+
+  printf("\r  The density field is saved.\n");
+  fclose(fp);
+  return 0;
+}

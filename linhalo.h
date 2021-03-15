@@ -55,6 +55,8 @@ void select_dens(FFT_CMPLX *, HALOS *, MAX_DENS *, const int, const size_t, cons
 
 int save_dens(const char *, FFT_CMPLX *, const int);
 
+int save_dens_binary(const char *, FFT_CMPLX *, const int);
+
 size_t binary_search(FFT_CMPLX *, size_t *, size_t, size_t, FFT_REAL, size_t);
 
 size_t binary_search_pos(FFT_CMPLX *, size_t *, size_t, size_t, FFT_REAL, size_t);
