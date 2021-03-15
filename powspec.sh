@@ -1,1 +1,0 @@
-../powspec/POWSPEC -c ../powspec/powspec.conf -d ./output/halos_G1024CIC_BS2500_S1001000_FAC0.075_6214031.dat -G 512 -a ./output/halos_G1024CIC_BS2500_S1001000_FAC0.075_6214031.dat.pspec > ./output/out.psk_new1.out &

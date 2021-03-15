@@ -79,7 +79,7 @@ int main(int argc, char *argv[]) {
   if (conf.savedm) {
     printf("Saving the density field ... ");
     fflush(stdout);
-    if ((ecode = save_dens(conf.dmout, mesh, conf.Ngrid))) {
+    if ((ecode = save_dens_binary(conf.dmout, mesh, conf.Ngrid))) {
       P_EXT("failed to save the density field.\n");
       return ecode;
     }
