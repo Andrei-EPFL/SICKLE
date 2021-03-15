@@ -283,10 +283,10 @@ int save_halo(const char *fname, HALOS *halos, const size_t Nh) {
     return ERR_FILE;
   }
   
-/*#ifdef OMP
+#ifdef OMP
 #pragma omp parallel private(buf,end,cache,n) shared(fp)
 {
-#endif*/
+#endif
   buf = calloc(CHUNK, sizeof *buf);
   cache = calloc(MAX_LEN_LINE, sizeof *cache);
   if (!buf || !cache) {
@@ -295,9 +295,9 @@ int save_halo(const char *fname, HALOS *halos, const size_t Nh) {
   }
   end = buf;
 
-/*#ifdef OMP
+#ifdef OMP
 #pragma omp for private(m)
-#endif*/
+#endif
   for (i = 0; i < Nh; i++) {
     n = snprintf(cache, MAX_LEN_LINE,
         OFMT_REAL " " OFMT_REAL " " OFMT_REAL " " OFMT_REAL "\n", halos[i].x[0], halos[i].x[1], halos[i].x[2], (double)halos[i].dens);
@@ -316,18 +316,18 @@ int save_halo(const char *fname, HALOS *halos, const size_t Nh) {
       end += m;
     }
     else {                              /* write buf to file */
-/*#ifdef OMP
+#ifdef OMP
 #pragma omp critical
       {
-#endif*/
+#endif
       if (fwrite(buf, sizeof(char) * (end - buf), 1, fp) != 1) {
         P_EXT("failed to write to output:\n%s\n", cache);
         exit(ERR_FILE);
       }
       fflush(fp);
-/*#ifdef OMP
+#ifdef OMP
       }
-#endif*/
+#endif
       m = cnt_strcpy(buf, cache, n + 1);
       if (m >= n + 1) {
         P_EXT("unexpected error for writing line:\n%s\n", cache);
@@ -338,26 +338,26 @@ int save_halo(const char *fname, HALOS *halos, const size_t Nh) {
   }
 
   if ((n = end - buf) > 0) {
-/*#ifdef OMP
+#ifdef OMP
 #pragma omp critical
     {
-#endif*/
+#endif
     if (fwrite(buf, sizeof(char) * n, 1, fp) != 1) {
       P_EXT("failed to write to output:\n%s\n", cache);
       exit(ERR_FILE);
     }
     fflush(fp);
-/*#ifdef OMP
+#ifdef OMP
     }
-#endif*/
+#endif
   }
 
   free(buf);
   free(cache);
 
-/*#ifdef OMP
+#ifdef OMP
 }
-#endif*/
+#endif
 
   fclose(fp);
   return 0;
