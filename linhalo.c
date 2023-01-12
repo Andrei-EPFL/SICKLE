@@ -84,7 +84,7 @@ int main(int argc, char *argv[]) {
 	printf("2. (To Generate density field) Up to this point %f seconds passed.\n The counter is set to zero again.\n", seconds);
 	fflush(stdout);
 
-	if (conf.savedm) {
+	//if (conf.savedm) {
 		printf("Saving the density field ... ");
 		fflush(stdout);
 		if ((ecode = save_dens_binary(conf.dmout, mesh, conf.Ngrid))) {
@@ -92,8 +92,8 @@ int main(int argc, char *argv[]) {
 			return ecode;
 		}
 		printf(FMT_DONE);
-	}
-	else {
+	//}
+	//else {
 		/*Populate the mesh with halos*/
 		start = time(NULL);
 		printf("Populating the mesh with haloes... ");
@@ -113,7 +113,7 @@ int main(int argc, char *argv[]) {
 			return ecode;
 		}
 		printf(FMT_DONE);
-	}
+	//}
 	free(max_dens);
 	free(halos);
 	FFT_FREE(mesh);

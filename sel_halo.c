@@ -300,7 +300,7 @@ int save_halo(const char *fname, HALOS *halos, const size_t Nh) {
 #endif
   for (i = 0; i < Nh; i++) {
     n = snprintf(cache, MAX_LEN_LINE,
-        OFMT_REAL " " OFMT_REAL " " OFMT_REAL " " OFMT_REAL "\n", halos[i].x[0], halos[i].x[1], halos[i].x[2], (double)halos[i].dens);
+        OFMT_REAL " " OFMT_REAL " " OFMT_REAL "\n", halos[i].x[0], halos[i].x[1], halos[i].x[2]);
     if (n < 0 || n >= MAX_LEN_LINE) {
       P_EXT(FMT_KEY(MAX_LEN_LINE)
           " in `define.h' is not large enough.\n");

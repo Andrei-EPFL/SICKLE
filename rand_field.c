@@ -115,7 +115,7 @@ int gauss_ran_field(const CONF *conf, const double *lnk, const double *lnP,
   r = gsl_rng_alloc(gsl_rng_mt19937);
   gsl_rng_set(r, conf->seed + omp_get_thread_num());
 #ifdef OMP
-#pragma omp for private(j,i,ki,kj,kk,idx,idx_2,i_2,k_2,j_2,ksq,kv,P,fac2, theta)
+#pragma omp for private(j,i,ki,kj,kk,idx,idx_2,i_2,k_2,j_2,ksq,kv,P,fac2, theta) schedule(static)
 #endif
   /* Loop in k,j,i order to reduce cache miss. */
   for (k = 0; k <= Ng / 2; k++) {
